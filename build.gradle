@@ -1,0 +1,46 @@
+    allprojects {
+    group 'com.messanger'
+    version '0.1.1-SNAPSHOT'
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+}
+
+group = 'com.messenger'
+version = '0.0.1-SNAPSHOT'
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'jacoco'
+
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+
+    
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    test {
+//        retry {
+//            failOnPassedAfterRetry = true
+//            maxFailures = 5
+//            maxRetries = 3
+//        }
+    }
+    
+    tasks.withType(Pmd) {
+        reports {
+            xml.enabled = true
+            html.enabled = true
+        }
+    }
+
+}
