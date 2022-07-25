@@ -1,8 +1,9 @@
-package com.messenger.backend.entity;
+package com.messenger.backend.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.messenger.backend.entity.UserEntity;
 
 import javax.persistence.AttributeConverter;
 import java.util.ArrayList;
