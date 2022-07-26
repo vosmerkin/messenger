@@ -3,11 +3,11 @@ package com.messenger.backend.services;
 import com.messenger.backend.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class messageService {
+public class MessageService {
     @Autowired
     private final MessageRepository messageRepository;
 
-    public messageService(MessageRepository messageRepository) {
+    public MessageService(MessageRepository messageRepository) {
         this.messageRepository = messageRepository;
     }
 }

@@ -1,14 +1,13 @@
 package com.messenger.backend.services;
 
-import com.messenger.backend.repository.MessageRepository;
 import com.messenger.backend.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class roomService {
+public class RoomService {
     @Autowired
     private final RoomRepository roomRepository;
 
-    public roomService(RoomRepository roomRepository) {
+    public RoomService(RoomRepository roomRepository) {
         this.roomRepository = roomRepository;
     }
 }
