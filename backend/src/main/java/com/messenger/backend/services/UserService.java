@@ -3,7 +3,9 @@ package com.messenger.backend.services;
 import com.messenger.backend.entity.UserEntity;
 import com.messenger.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserService {
     @Autowired
     private final UserRepository userRepository;
