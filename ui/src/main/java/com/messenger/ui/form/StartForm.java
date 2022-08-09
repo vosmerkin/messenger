@@ -13,6 +13,13 @@ public class StartForm {
     private JButton sendButton;
     private JTextField messageTextField;
     private JPanel mainPanel;
+    private JTextField RoomChatTextField;
+    private JList RoomUserList;
+    private JButton userLoginButton;
+    private JList list1;
+    private JButton roomCreateConnectButton;
+    private JTextField userNameTextField;
+    private JTextField roomNameTextField;
 
     public StartForm() {
         sendButton.addActionListener(e -> System.out.println("Going to send a message"));
