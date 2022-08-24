@@ -19,10 +19,16 @@ tasks.named('test') {
 dependencies {
     implementation 'com.google.guava:guava:31.0.1-jre'
     implementation 'com.intellij:forms_rt:7.0.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
+    implementation project(':common')
+
+    compileOnly 'com.intellij:forms_rt:7.0.3'
+    compileOnly 'org.slf4j:slf4j-api:1.7.36'
 
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
     testImplementation 'org.mockito:mockito-core:4.6.1'
+
 }
