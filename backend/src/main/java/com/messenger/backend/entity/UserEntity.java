@@ -30,6 +30,9 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "contact_id"))
     private Set<UserEntity> contactList;
 
+    @ManyToMany (mappedBy = "roomUsers")
+    Set<RoomEntity> rooms;
+
     public UserEntity() {
     }
 
