@@ -39,7 +39,7 @@ public class UserController {
     public UserDto updateUser(@Validated(UserDto.UpdateContactList.class) @RequestBody UserDto userDto) {
         log.info("/updateUser_{}", userDto);
         UserEntity requestUser = modelMapper.map(userDto, UserEntity.class);
-        UserEntity user = userService.UpdateContactList(requestUser);
+        UserEntity user = userService.updateContactList(requestUser);
         UserDto responseUserDto = modelMapper.map(user, UserDto.class);
         return responseUserDto;
     }

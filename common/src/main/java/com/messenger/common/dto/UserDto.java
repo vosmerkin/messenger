@@ -26,10 +26,7 @@ public class UserDto {
 
     public interface UpdateContactList {
     }
-//
-//    public UserEntity toEntity() {
-//        return new UserEntity(id, userName, lastActionDateTime, activeStatus, contactList);
-//    }
+
 
     public String getUserName() {
         return userName;
