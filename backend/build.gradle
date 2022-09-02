@@ -24,6 +24,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.flywaydb:flyway-core'
 	implementation "com.zaxxer:HikariCP"
+	implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.1.1'
+	implementation project(':common')
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'

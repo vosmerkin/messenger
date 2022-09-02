@@ -30,6 +30,12 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "contact_id"))
     private Set<UserEntity> contactList;
 
+    @ManyToMany (mappedBy = "roomUsers")
+    Set<RoomEntity> rooms;
+
+    public UserEntity() {
+    }
+
     public UserEntity(Integer id, String userName, Date lastActionDateTime, Boolean activeStatus, Set<UserEntity> contactList) {
         this.id = id;
         this.userName = userName;
@@ -40,7 +46,6 @@ public class UserEntity {
 
     public UserEntity(Integer id) {
         this.id = id;
-
     }
 
     public Integer getId() {

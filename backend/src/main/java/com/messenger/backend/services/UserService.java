@@ -25,7 +25,7 @@ public class UserService {
     }
 
 
-    public UserEntity UpdateContactList(UserEntity userEntity) {
+    public UserEntity updateContactList(UserEntity userEntity) {
         Integer id = userEntity.getId();
         if (userRepository.existsById(id)) {
             UserEntity existingUser = userRepository.getReferenceById(id);

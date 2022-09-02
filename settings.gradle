@@ -2,3 +2,6 @@ rootProject.name = 'messenger'
 
 include 'backend'
 include 'ui'
+include 'common'
+
+

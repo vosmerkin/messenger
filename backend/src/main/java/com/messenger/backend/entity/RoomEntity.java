@@ -4,6 +4,7 @@ import com.messenger.backend.services.UserListToStringConverter;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "tbl_room")
@@ -15,9 +16,14 @@ public class RoomEntity {
     @Column(name = "room_name")
     private String roomName;
 
-    @Column(name = "users", columnDefinition = "json")
-    @Convert(converter = UserListToStringConverter.class)
-    private List<UserEntity> roomUsers;
+    @ManyToMany
+    @JoinTable(
+            name = "tbl_room_users",
+            joinColumns = @JoinColumn(name = "room_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<UserEntity> roomUsers;
+
+
 
 
 }
