@@ -4,6 +4,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.messenger.common.dto.UserDto;
 import com.messenger.ui.services.HttpBackendClient;
+import com.messenger.ui.services.UiActions;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -15,6 +16,7 @@ import java.awt.event.ActionListener;
 public class StartForm {
     private DefaultListModel contactListModel = new DefaultListModel();
     private HttpBackendClient backendClient;
+    private UiActions uiActions = new UiActions();
     private JButton sendButton;
     private JTextField messageTextField;
     private JPanel mainPanel;
@@ -37,16 +39,18 @@ public class StartForm {
                     protected Object doInBackground() throws Exception {
                         UserDto result;
                         if (userLoggedInStatus) {
-                            result = backendClient.userLogOffAction(userNameTextField.getText());
+                            result = uiActions.userLogOffAction(userNameTextField.getText());
                             if (result == null) {
                                 //noConnection error
                             } else {
                                 userLoginButton.setText("User Login");
                                 userNameTextField.setEnabled(true);
                                 userLoggedInStatus = false;
+                                //clear controls - contactList,msgList, etc
                             }
                         } else {
-                            result = backendClient.userLogInAction(userNameTextField.getText());
+
+                            result = uiActions.userLogInAction(userNameTextField.getText());
                             if (result == null) {
                                 //noConnection error
                             } else {
@@ -63,7 +67,6 @@ public class StartForm {
                                 //fill Contact List from UserEntity
                             }
                         }
-
                         return null;
                     }
                 }.execute();

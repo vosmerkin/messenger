@@ -78,7 +78,7 @@ public class HttpBackendClient {
 //    }
 
 
-    public UserDto userRequestAction(String name) {
+    public UserDto userRequest(String name) {
         UserDto result = null;
         String resultString;
         request = HttpRequest.newBuilder(URI.create(Adresses.USER_REQUEST + name))
@@ -96,36 +96,37 @@ public class HttpBackendClient {
                     JOptionPane.INFORMATION_MESSAGE);
 //            log.debug(result);
         }
-        var om = new ObjectMapper();
+//        result =
+//        var om = new ObjectMapper();
+//        try {
+//            result = om.readValue(resultString, UserDto.class);
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }
+        return result.fromJson(resultString);
+    }
+
+
+    public String userUpdate(UserDto data) {
+        String result;
+        request = HttpRequest.newBuilder(URI.create(Adresses.UPDATE))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(data.toJson()))
+                .build();
         try {
-            result = om.readValue(resultString, UserDto.class);
-        } catch (JsonProcessingException e) {
+            result = this.call();
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+            result = "Request Error";
+            JOptionPane.showMessageDialog(null,
+                    "InfoBox: " + result,
+                    "HttpClient Error",
+                    JOptionPane.INFORMATION_MESSAGE);
+            log.debug(result);
         }
         return result;
     }
 
-
-//    public String updateAction(Name data) {
-//        String result;
-//        request = HttpRequest.newBuilder(URI.create(Adresses.UPDATE))
-//                .header("Content-Type", "application/json")
-//                .PUT(HttpRequest.BodyPublishers.ofString(data.toJson()))
-//                .build();
-//        try {
-//            result = this.call();
-//        } catch (IOException | InterruptedException e) {
-////            e.printStackTrace();
-//            result = "Request Error";
-//            JOptionPane.showMessageDialog(null,
-//                    "InfoBox: " + result,
-//                    "HttpClient Error",
-//                    JOptionPane.INFORMATION_MESSAGE);
-//            log.debug(result);
-//        }
-//        return result;
-//    }
-//
 
 //    public String deleteAction(String name) {
 //        String result;
