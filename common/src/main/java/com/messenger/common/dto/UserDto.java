@@ -21,6 +21,8 @@ public class UserDto {
     private String userName;
     @Null(groups = {UpdateContactList.class,EmptyUserDto.class})
     private Date lastActionDateTime;
+
+
     @Null(groups = {UpdateContactList.class,EmptyUserDto.class})
     private Boolean activeStatus;
     @Null(groups = {EmptyUserDto.class})
@@ -32,8 +34,8 @@ public class UserDto {
                    @Max(value = 0,groups = {EmptyUserDto.class})
                    @NotNull(groups = {UpdateContactList.class}) Integer id,
                    @Null(groups = {UpdateContactList.class,EmptyUserDto.class}) String userName,
-                   @Null(groups = {UpdateContactList.class,EmptyUserDto.class}) Date lastActionDateTime,
-                   @Null(groups = {UpdateContactList.class,EmptyUserDto.class})Boolean activeStatus,
+                   @Null(groups = {UpdateContactList.class, EmptyUserDto.class}) Date lastActionDateTime,
+                   @Null(groups = {UpdateContactList.class, EmptyUserDto.class}) Boolean activeStatus,
                    @Null(groups = {EmptyUserDto.class})
                    @NotNull(groups = {UpdateContactList.class}) Set<UserDto> contactList) {
         this.id = id;
@@ -42,7 +44,11 @@ public class UserDto {
         this.activeStatus = activeStatus;
         this.contactList = contactList;
     }
-    public UserDto (String json){
+
+    public UserDto(String json) {   // which way is better to convert to json?
+        //constructor, accepting String json as a parameter, and creating UserDTO instance
+        //or
+        // static method
         var om = new ObjectMapper();
         UserDto userDto;
         try {
@@ -51,18 +57,38 @@ public class UserDto {
             userDto = EMPTY_USER_DTO;
             e.printStackTrace();
         }
-
+        this.id = userDto.getId();
+        this.userName=userDto.getUserName();
+        this.activeStatus= userDto.getActiveStatus();
+        this.lastActionDateTime=userDto.getLastActionDateTime();
+        this.contactList=userDto.getContactList();
     }
 
 
     public interface UpdateContactList {
     }
+
     public interface EmptyUserDto {
     }
 
+    public void setActiveStatus(Boolean activeStatus) {
+        this.activeStatus = activeStatus;
+    }
+
+    public Integer getId() {
+        return id;
+    }
 
     public String getUserName() {
         return userName;
+    }
+
+    public Date getLastActionDateTime() {
+        return lastActionDateTime;
+    }
+
+    public Boolean getActiveStatus() {
+        return activeStatus;
     }
 
     public Set<UserDto> getContactList() {
@@ -81,7 +107,7 @@ public class UserDto {
         return json;
     }
 
-    public UserDto fromJson(String json) {
+    public static UserDto fromJson(String json) {
         var om = new ObjectMapper();
         UserDto userDto;
         try {

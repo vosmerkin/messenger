@@ -103,7 +103,7 @@ public class HttpBackendClient {
 //        } catch (JsonProcessingException e) {
 //            e.printStackTrace();
 //        }
-        return result.fromJson(resultString);
+        return UserDto.fromJson(resultString);
     }
 
 
