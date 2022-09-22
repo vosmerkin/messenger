@@ -1,13 +1,11 @@
 package com.messenger.ui.services;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.messenger.common.dto.JsonMapper;
 import com.messenger.common.dto.UserDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -21,6 +19,7 @@ public class HttpBackendClient {
 
     private HttpClient client = HttpClient.newHttpClient();
     private HttpRequest request;
+
 
     public HttpBackendClient() {
     }
@@ -47,14 +46,6 @@ public class HttpBackendClient {
 //
 //    }
 
-    public String call() throws IOException, InterruptedException {
-        String result;
-        HttpResponse<String> response;
-        response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        result = response.body();
-        return result;
-    }
-
 
 //    public String createAction(Name data) {
 //        String result;
@@ -78,52 +69,32 @@ public class HttpBackendClient {
 //    }
 
 
-    public UserDto userRequest(String name) {
-        UserDto result = null;
+    public UserDto userRequest(String name) throws IOException, InterruptedException, UserNotFoundException {
+        UserDto result;
         String resultString;
         request = HttpRequest.newBuilder(URI.create(Adresses.USER_REQUEST + name))
                 .GET()
                 .build();
         HttpResponse<String> response = null;
-        try {
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            resultString = response.body();
-        } catch (IOException | InterruptedException e) {
-            resultString = "Request Error";
-            JOptionPane.showMessageDialog(null,
-                    "InfoBox: " + resultString,
-                    "HttpClient Error",
-                    JOptionPane.INFORMATION_MESSAGE);
-//            log.debug(result);
-        }
-//        result =
-//        var om = new ObjectMapper();
-//        try {
-//            result = om.readValue(resultString, UserDto.class);
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
-        return UserDto.fromJson(resultString);
+        response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        resultString = response.body();
+        if (response.statusCode() == 404) throw new UserNotFoundException("User '" + name + "' not found");
+        result = JsonMapper.fromJson(resultString, UserDto.class);
+        return result;
     }
 
 
-    public String userUpdate(UserDto data) {
-        String result;
+    public UserDto userUpdate(UserDto data) throws IOException, InterruptedException {
+        UserDto result;
+        String resultString;
         request = HttpRequest.newBuilder(URI.create(Adresses.UPDATE))
                 .header("Content-Type", "application/json")
                 .PUT(HttpRequest.BodyPublishers.ofString(data.toJson()))
                 .build();
-        try {
-            result = this.call();
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            result = "Request Error";
-            JOptionPane.showMessageDialog(null,
-                    "InfoBox: " + result,
-                    "HttpClient Error",
-                    JOptionPane.INFORMATION_MESSAGE);
-            log.debug(result);
-        }
+        HttpResponse<String> response = null;
+        response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        resultString = response.body();
+        result = JsonMapper.fromJson(resultString, UserDto.class);
         return result;
     }
 

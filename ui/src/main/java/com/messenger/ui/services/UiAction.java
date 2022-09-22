@@ -4,10 +4,10 @@ import com.messenger.common.dto.UserDto;
 
 import java.io.IOException;
 
-public class UiActions {
+public class UiAction {
     private HttpBackendClient httpBackendClient = new HttpBackendClient();
 
-    public UserDto userLogInAction(String name) throws IOException, InterruptedException {
+    public UserDto userLogInAction(String name) throws IOException, InterruptedException, UserNotFoundException {
         UserDto user = httpBackendClient.userRequest(name);
         if (user == UserDto.EMPTY_USER_DTO) {  //it means no user with given name
             //ask to add a user
@@ -18,7 +18,7 @@ public class UiActions {
         return user;
     }
 
-    public UserDto userLogOffAction(String name) throws IOException, InterruptedException {
+    public UserDto userLogOffAction(String name) throws IOException, InterruptedException, UserNotFoundException {
         UserDto user = httpBackendClient.userRequest(name);
         if (user == UserDto.EMPTY_USER_DTO) {  //it means no user with given name
             //error message, its impossible if currently loggend user cannot be found

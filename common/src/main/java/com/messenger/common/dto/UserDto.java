@@ -4,39 +4,34 @@ package com.messenger.common.dto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 
 public class UserDto {
 
-    @Min(value = 0,groups = {EmptyUserDto.class})
-    @Max(value = 0,groups = {EmptyUserDto.class})
+
     @NotNull(groups = {UpdateContactList.class})
     private Integer id;
-    @Null(groups = {UpdateContactList.class,EmptyUserDto.class})
+    @Null(groups = {UpdateContactList.class})
     private String userName;
-    @Null(groups = {UpdateContactList.class,EmptyUserDto.class})
+    @Null(groups = {UpdateContactList.class})
     private Date lastActionDateTime;
 
 
-    @Null(groups = {UpdateContactList.class,EmptyUserDto.class})
+    @Null(groups = {UpdateContactList.class})
     private Boolean activeStatus;
-    @Null(groups = {EmptyUserDto.class})
     @NotNull(groups = {UpdateContactList.class})
     private Set<UserDto> contactList;
 
-    public final static UserDto EMPTY_USER_DTO = new UserDto(0,null,null,null,null);
-    public UserDto(@Min(value = 0,groups = {EmptyUserDto.class})
-                   @Max(value = 0,groups = {EmptyUserDto.class})
-                   @NotNull(groups = {UpdateContactList.class}) Integer id,
-                   @Null(groups = {UpdateContactList.class,EmptyUserDto.class}) String userName,
-                   @Null(groups = {UpdateContactList.class, EmptyUserDto.class}) Date lastActionDateTime,
-                   @Null(groups = {UpdateContactList.class, EmptyUserDto.class}) Boolean activeStatus,
-                   @Null(groups = {EmptyUserDto.class})
+    public final static UserDto EMPTY_USER_DTO = new UserDto(0, null, null, null, null);
+
+    public UserDto(@NotNull(groups = {UpdateContactList.class}) Integer id,
+                   @Null(groups = {UpdateContactList.class}) String userName,
+                   @Null(groups = {UpdateContactList.class}) Date lastActionDateTime,
+                   @Null(groups = {UpdateContactList.class}) Boolean activeStatus,
                    @NotNull(groups = {UpdateContactList.class}) Set<UserDto> contactList) {
         this.id = id;
         this.userName = userName;
@@ -68,9 +63,6 @@ public class UserDto {
     public interface UpdateContactList {
     }
 
-    public interface EmptyUserDto {
-    }
-
     public void setActiveStatus(Boolean activeStatus) {
         this.activeStatus = activeStatus;
     }
@@ -93,6 +85,46 @@ public class UserDto {
 
     public Set<UserDto> getContactList() {
         return contactList;
+    }
+
+    @Override
+    public boolean equals(Object aThat) {
+        //a standard implementation pattern
+        if (this == aThat) return true;
+        if (!(aThat instanceof UserDto)) return false;
+        UserDto that = (UserDto) aThat;
+        for (int i = 0; i < this.getSigFields().length; ++i) {
+            if (!Objects.equals(this.getSigFields()[i], that.getSigFields()[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        //simple one-line implementation
+        return Objects.hash(getSigFields());
+    }
+
+    private Object[] getSigFields() {
+        Object[] result = {id, userName, contactList};
+        return result;
+    }
+
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        s.append("id: ");
+        s.append((id == null) ? "null" : id.toString());
+        s.append(", userName: ");
+        s.append((userName != null) ? userName.toString() : "null");
+        s.append(", activeStatus: ");
+        s.append((activeStatus) ? "online" : "offline");
+        s.append(", lastActionDateTime: ");
+        s.append((lastActionDateTime != null) ? lastActionDateTime.toString() : "null");
+        s.append(", contactList: ");
+        s.append((contactList != null) ? contactList.toString() : "null");
+        return s.toString();
     }
 
     public String toJson() {
