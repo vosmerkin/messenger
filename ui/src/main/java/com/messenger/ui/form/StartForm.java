@@ -45,9 +45,11 @@ public class StartForm {
                 new SwingWorker() {
                     @Override
                     protected Object doInBackground() throws Exception {
+                        sendButton.setEnabled(false);
                         UserDto result;
                         if (userLoggedInStatus) {
                             result = uiAction.userLogOffAction(currentUser);
+                            currentUser = null;
                             userLoginButton.setText("User Login");
                             userNameTextField.setEnabled(true);
                             userLoggedInStatus = false;
@@ -71,14 +73,20 @@ public class StartForm {
                                         "Warning",
                                         JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                                         //register user
+                                    JOptionPane.showMessageDialog(null,
+                                            "User " + userName + " created. You can log in",
+                                            "Registration",
+                                            JOptionPane.INFORMATION_MESSAGE);
+                                } else {
+
                                 }
                             }
                             userLoginButton.setText("User Logoff");
                             userNameTextField.setEnabled(false);
                             userLoggedInStatus = true;
                             //fill Contact List from UserEntity
-
                         }
+                        sendButton.setEnabled(true);
                         return null;
                     }
                 }.execute();
