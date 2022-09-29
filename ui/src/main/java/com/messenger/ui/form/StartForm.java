@@ -56,31 +56,7 @@ public class StartForm {
                             //clear controls - contactList,msgList, etc
                         } else {
                             String userName = userNameTextField.getText();
-                            try {
-                                currentUser = uiAction.userLogInAction(userName);
-                            } catch (IOException ex) {
-                                log.debug(String.valueOf(ex));
-                                JOptionPane.showMessageDialog(null,
-                                        "Connection problem. Try again later ",
-                                        "HttpClient Error",
-                                        JOptionPane.INFORMATION_MESSAGE);
-                            } catch (InterruptedException ex) {
-                                log.debug(String.valueOf(ex));
-                            } catch (UserNotFoundException ex) {
-                                log.debug(String.valueOf(ex));
-                                if (JOptionPane.showConfirmDialog(null,
-                                        "User " + userName + " not found. Do you wish to register",
-                                        "Warning",
-                                        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                                        //register user
-                                    JOptionPane.showMessageDialog(null,
-                                            "User " + userName + " created. You can log in",
-                                            "Registration",
-                                            JOptionPane.INFORMATION_MESSAGE);
-                                } else {
-
-                                }
-                            }
+                            currentUser = uiAction.userLogInAction(userName);
                             userLoginButton.setText("User Logoff");
                             userNameTextField.setEnabled(false);
                             userLoggedInStatus = true;

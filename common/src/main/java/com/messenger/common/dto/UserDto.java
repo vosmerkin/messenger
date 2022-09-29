@@ -1,9 +1,6 @@
 package com.messenger.common.dto;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.util.Date;
@@ -40,24 +37,7 @@ public class UserDto {
         this.contactList = contactList;
     }
 
-    public UserDto(String json) {   // which way is better to convert to json?
-        //constructor, accepting String json as a parameter, and creating UserDTO instance
-        //or
-        // static method
-        var om = new ObjectMapper();
-        UserDto userDto;
-        try {
-            userDto = om.readValue(json, UserDto.class);
-        } catch (JsonProcessingException e) {
-            userDto = EMPTY_USER_DTO;
-            e.printStackTrace();
-        }
-        this.id = userDto.getId();
-        this.userName=userDto.getUserName();
-        this.activeStatus= userDto.getActiveStatus();
-        this.lastActionDateTime=userDto.getLastActionDateTime();
-        this.contactList=userDto.getContactList();
-    }
+
 
 
     public interface UpdateContactList {
@@ -107,6 +87,7 @@ public class UserDto {
         return Objects.hash(getSigFields());
     }
 
+
     private Object[] getSigFields() {
         Object[] result = {id, userName, contactList};
         return result;
@@ -127,27 +108,6 @@ public class UserDto {
         return s.toString();
     }
 
-    public String toJson() {
-        var ow = new ObjectMapper();
-        String json;
-        try {
-            json = ow.writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            json = "{}";
-            e.printStackTrace();
-        }
-        return json;
-    }
 
-    public static UserDto fromJson(String json) {
-        var om = new ObjectMapper();
-        UserDto userDto;
-        try {
-            userDto = om.readValue(json, UserDto.class);
-        } catch (JsonProcessingException e) {
-            userDto = EMPTY_USER_DTO;
-            e.printStackTrace();
-        }
-        return userDto;
-    }
+
 }
