@@ -4,6 +4,10 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.messenger.common.dto.UserDto;
 import com.messenger.ui.services.HttpBackendClient;
+import com.messenger.ui.services.UiAction;
+import com.messenger.ui.services.UserNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -11,10 +15,16 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class StartForm {
+    private static final Logger log = LoggerFactory.getLogger(StartForm.class);
+
     private DefaultListModel contactListModel = new DefaultListModel();
     private HttpBackendClient backendClient;
+    private UiAction uiAction = new UiAction();
+    private UserDto currentUser;
+
     private JButton sendButton;
     private JTextField messageTextField;
     private JPanel mainPanel;
@@ -35,40 +45,30 @@ public class StartForm {
                 new SwingWorker() {
                     @Override
                     protected Object doInBackground() throws Exception {
+                        sendButton.setEnabled(false);
                         UserDto result;
                         if (userLoggedInStatus) {
-                            result = backendClient.userLogOffAction(userNameTextField.getText());
-                            if (result == null) {
-                                //noConnection error
-                            } else {
-                                userLoginButton.setText("User Login");
-                                userNameTextField.setEnabled(true);
-                                userLoggedInStatus = false;
-                            }
+                            result = uiAction.userLogOffAction(currentUser);
+                            currentUser = null;
+                            userLoginButton.setText("User Login");
+                            userNameTextField.setEnabled(true);
+                            userLoggedInStatus = false;
+                            //clear controls - contactList,msgList, etc
                         } else {
-                            result = backendClient.userLogInAction(userNameTextField.getText());
-                            if (result == null) {
-                                //noConnection error
-                            } else {
-                                //check if there is no such user. Ask to register
-
-                                if (result.getContactList().size() > 0) {
-                                    for (UserDto user : result.getContactList()) {
-                                        contactListModel.addElement(user);
-                                    }
-                                }
-                                userLoginButton.setText("User Logoff");
-                                userNameTextField.setEnabled(false);
-                                userLoggedInStatus = true;
-                                //fill Contact List from UserEntity
-                            }
+                            String userName = userNameTextField.getText();
+                            currentUser = uiAction.userLogInAction(userName);
+                            userLoginButton.setText("User Logoff");
+                            userNameTextField.setEnabled(false);
+                            userLoggedInStatus = true;
+                            //fill Contact List from UserEntity
                         }
-
+                        sendButton.setEnabled(true);
                         return null;
                     }
                 }.execute();
             }
         });
+
         userNameTextField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
