@@ -2,10 +2,10 @@ package com.messenger.ui.form;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
 import com.messenger.ui.services.HttpBackendClient;
 import com.messenger.ui.services.UiAction;
-import com.messenger.ui.services.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,15 +15,15 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 public class StartForm {
     private static final Logger log = LoggerFactory.getLogger(StartForm.class);
 
-    private DefaultListModel contactListModel = new DefaultListModel();
+    private DefaultListModel<UserDto> contactListModel = new DefaultListModel<UserDto>();
     private HttpBackendClient backendClient;
     private UiAction uiAction = new UiAction();
     private UserDto currentUser;
+    private RoomDto currentRoom;
 
     private JButton sendButton;
     private JTextField messageTextField;
@@ -45,24 +45,30 @@ public class StartForm {
                 new SwingWorker() {
                     @Override
                     protected Object doInBackground() throws Exception {
-                        sendButton.setEnabled(false);
-                        UserDto result;
+                        userLoginButton.setEnabled(false);
                         if (userLoggedInStatus) {
-                            result = uiAction.userLogOffAction(currentUser);
-                            currentUser = null;
-                            userLoginButton.setText("User Login");
-                            userNameTextField.setEnabled(true);
-                            userLoggedInStatus = false;
-                            //clear controls - contactList,msgList, etc
+                            UserDto user = uiAction.userLogOffAction(currentUser);
+                            if (user != null) {
+                                currentUser = null;
+                                userLoginButton.setText("User Login");
+                                userNameTextField.setEnabled(true);
+                                userLoggedInStatus = false;
+                                //clear controls - contactList,msgList, etc
+                                contactListModel.removeAllElements();
+                            }
                         } else {
                             String userName = userNameTextField.getText();
                             currentUser = uiAction.userLogInAction(userName);
-                            userLoginButton.setText("User Logoff");
-                            userNameTextField.setEnabled(false);
-                            userLoggedInStatus = true;
-                            //fill Contact List from UserEntity
+                            if (currentUser != null) {
+                                userLoginButton.setText("User Logoff");
+                                userNameTextField.setEnabled(false);
+                                userLoggedInStatus = true;
+                                contactListModel.addAll(currentUser.getContactList());
+                                contactList.setModel(contactListModel);
+                                //fill Contact List from UserEntity
+                            }
                         }
-                        sendButton.setEnabled(true);
+                        userLoginButton.setEnabled(true);
                         return null;
                     }
                 }.execute();
@@ -85,10 +91,48 @@ public class StartForm {
                 changeUserLoginButtonEnabledState();
             }
         });
+        roomCreateConnectButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new SwingWorker() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        String roomName = roomNameTextField.getName();
+                        currentRoom = uiAction.roomEnter(roomName);
+
+
+                        return null;
+                    }
+                }.execute();
+            }
+        });
+        roomNameTextField.getDocument().
+
+                addDocumentListener(new DocumentListener() {
+                    @Override
+                    public void insertUpdate(DocumentEvent e) {
+                        changeRoomCreateConnectButtonEnabledState();
+                    }
+
+                    @Override
+                    public void removeUpdate(DocumentEvent e) {
+                        changeRoomCreateConnectButtonEnabledState();
+                    }
+
+                    @Override
+                    public void changedUpdate(DocumentEvent e) {
+                        changeRoomCreateConnectButtonEnabledState();
+                    }
+                });
+
     }
 
     private void changeUserLoginButtonEnabledState() {
         userLoginButton.setEnabled(!userNameTextField.getText().isBlank());
+    }
+
+    private void changeRoomCreateConnectButtonEnabledState() {
+        roomCreateConnectButton.setEnabled(!roomNameTextField.getText().isBlank());
     }
 
     public JPanel getMainPanel() {
@@ -98,6 +142,7 @@ public class StartForm {
 
     {
         changeUserLoginButtonEnabledState();
+        changeRoomCreateConnectButtonEnabledState();
         userLoggedInStatus = false;
 
 // GUI initializer generated by IntelliJ IDEA GUI Designer

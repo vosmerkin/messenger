@@ -23,7 +23,7 @@ public class UserDto {
     @NotNull(groups = {UpdateContactList.class})
     private Set<UserDto> contactList;
 
-    public final static UserDto EMPTY_USER_DTO = new UserDto(0, null, null, null, null);
+//    public final static UserDto EMPTY_USER_DTO = new UserDto(0, null, null, null, null);
 
     public UserDto(@NotNull(groups = {UpdateContactList.class}) Integer id,
                    @Null(groups = {UpdateContactList.class}) String userName,

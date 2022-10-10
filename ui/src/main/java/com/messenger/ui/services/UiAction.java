@@ -1,5 +1,6 @@
 package com.messenger.ui.services;
 
+import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,5 +58,36 @@ public class UiAction {
             log.debug(String.valueOf(ex));
         }
         return user;
+    }
+
+    public RoomDto roomEnter(String roomName) {
+        RoomDto roomDto = null;
+        try {
+            //get roomDto
+            roomDto = httpBackendClient.roomRequest(roomName);
+        } catch (IOException ex) {
+            log.debug(String.valueOf(ex));
+            JOptionPane.showMessageDialog(null,
+                    "Connection problem. Try again later ",
+                    "HttpClient Error",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (InterruptedException ex) {
+            log.debug(String.valueOf(ex));
+        } catch (RoomNotFoundException ex) {
+            log.debug(String.valueOf(ex));
+            if (JOptionPane.showConfirmDialog(null,
+                    "Room " + roomName + " not found. Do you wish to create",
+                    "Warning",
+                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        //if not present - create room
+                JOptionPane.showMessageDialog(null,
+                        "Room " + roomName + " created. You can now enter",
+                        "Room created",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+
+        //if present - get room users and history
+        return roomDto;
     }
 }

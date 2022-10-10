@@ -6,7 +6,10 @@ public class Adresses {
     private static String host2 = "http://localhost:8080";
     private static String host = host2;
     public static final String CREATE = host + "/CRUDaddnames";
-    public static final String USER_REQUEST = host + "/getUser?name=";
     public static final String UPDATE = host + "/CRUDupdatenames";
     public static final String DELETE = host + "/CRUDdeletenames?name=";
+
+    
+    public static final String ROOM_REQUEST = host + "/getRoom?name=";
+    public static final String USER_REQUEST = host + "/getUser?name=";
 }
