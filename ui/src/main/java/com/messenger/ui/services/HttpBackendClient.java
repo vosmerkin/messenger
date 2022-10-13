@@ -2,6 +2,7 @@ package com.messenger.ui.services;
 
 
 import com.messenger.common.dto.JsonMapper;
+import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,4 +55,18 @@ public class HttpBackendClient {
         return result;
     }
 
+    public RoomDto roomRequest(String roomName) throws IOException, InterruptedException, RoomNotFoundException {
+        RoomDto roomDto;
+        String resultString;
+        request = HttpRequest.newBuilder(URI.create(Adresses.ROOM_REQUEST + roomName))
+                .GET()
+                .build();
+        HttpResponse<String> response = null;
+        response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        resultString = response.body();
+        if (response.statusCode() == 404) throw new RoomNotFoundException("Room '" + roomName + "' not found");
+        roomDto = JsonMapper.fromJson(resultString, RoomDto.class);
+        return roomDto;
+
+    }
 }
