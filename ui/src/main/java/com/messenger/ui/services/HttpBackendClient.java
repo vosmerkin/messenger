@@ -67,6 +67,20 @@ public class HttpBackendClient {
         if (response.statusCode() == 404) throw new RoomNotFoundException("Room '" + roomName + "' not found");
         roomDto = JsonMapper.fromJson(resultString, RoomDto.class);
         return roomDto;
-
     }
+
+    public RoomDto roomCreate(RoomDto roomDto) throws IOException, InterruptedException {
+//        RoomDto roomDto;
+        String resultString;
+        request = HttpRequest.newBuilder(URI.create(Adresses.ROOM_REQUEST))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(JsonMapper.toJson(roomDto)))
+                .build();
+        HttpResponse<String> response = null;
+        response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        resultString = response.body();
+        roomDto = JsonMapper.fromJson(resultString, RoomDto.class);
+        return roomDto;
+    }
+
 }

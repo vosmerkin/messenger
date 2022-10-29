@@ -11,5 +11,6 @@ public class Adresses {
 
     
     public static final String ROOM_REQUEST = host + "/getRoom?name=";
+    public static final String ROOM_CREATE = host + "/createRoom";
     public static final String USER_REQUEST = host + "/getUser?name=";
 }

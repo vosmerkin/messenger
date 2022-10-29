@@ -1,17 +1,24 @@
 package com.messenger.common.dto;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
 public class RoomDto implements Serializable {
+    @Null(groups = {RoomDto.NewRoom.class})
     private final Integer id;
+    @NotNull(groups = {RoomDto.NewRoom.class})
     private final String roomName;
+    @Null(groups = {RoomDto.NewRoom.class})
     private Set<UserDto> roomUsers;
 
-    public RoomDto(Integer id, String roomName) {
+    public RoomDto(@Null(groups = {NewRoom.class}) Integer id, @NotNull(groups = {NewRoom.class}) String roomName) {
         this.id = id;
         this.roomName = roomName;
+    }
+    public interface NewRoom{
     }
 
     public Integer getId() {

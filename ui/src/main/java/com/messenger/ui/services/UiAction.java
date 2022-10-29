@@ -76,10 +76,11 @@ public class UiAction {
         } catch (RoomNotFoundException ex) {
             log.debug(String.valueOf(ex));
             if (JOptionPane.showConfirmDialog(null,
-                    "Room " + roomName + " not found. Do you wish to create",
+                    "Room " + roomName + " not found. Do you wish to create?",
                     "Warning",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
         //if not present - create room
+                roomDto = createRoom(roomName);
                 JOptionPane.showMessageDialog(null,
                         "Room " + roomName + " created. You can now enter",
                         "Room created",
@@ -88,6 +89,23 @@ public class UiAction {
         }
 
         //if present - get room users and history
+        return roomDto;
+    }
+
+    private RoomDto createRoom(String roomName) {
+        RoomDto roomDto = new RoomDto(null, roomName);
+        try {
+            //get roomDto
+            roomDto = httpBackendClient.roomCreate(roomDto);
+        } catch (IOException ex) {
+            log.debug(String.valueOf(ex));
+            JOptionPane.showMessageDialog(null,
+                    "Connection problem. Try again later ",
+                    "HttpClient Error",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (InterruptedException ex) {
+            log.debug(String.valueOf(ex));
+        }
         return roomDto;
     }
 }
