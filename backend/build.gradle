@@ -1,9 +1,13 @@
 plugins {
 	id 'org.springframework.boot' version '2.7.2'
 	id 'io.spring.dependency-management' version '1.0.12.RELEASE'
+	id "org.owasp.dependencycheck" version "6.5.2.1"
 	id 'java'
 	id "org.flywaydb.flyway" version "9.0.4"
 }
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 
 configurations {
 	compileOnly {
@@ -14,6 +18,50 @@ configurations {
 repositories {
 	mavenCentral()
 }
+
+ext {
+	profile = System.getProperty('profile') ?: 'default'
+}
+
+bootRun {
+	args = ["--spring.profiles.active=" + profile]
+	jvmArgs = ["-Djava.net.preferIPv4Stack=true"]
+}
+
+bootJar {
+	launchScript()
+	manifest {
+		attributes 'Main-Class': 'org.springframework.boot.loader.PropertiesLauncher'
+	}
+	mainClass = 'com.messenger.backend.BackendApplication'
+	exclude('shell')
+	exclude('*.sql')
+	exclude('application*.properties')
+}
+
+task copyConfig(type: Copy) {
+	from(files('src/main/resources'))
+	include('application*.properties')
+	include('spring-*.conf')
+	into 'build/libs/conf'
+}
+
+task dist(type: Zip) {
+	archiveFileName = project.name + "-" + profile + ".zip"
+	destinationDirectory = file('dist/')
+	from(files('./build/libs')) {
+		exclude('*plain.jar')
+	}
+	from('src/main/shell/') {
+		include("spring-*.conf")
+	}
+	from(".") {
+		include('README.md')
+	}
+}
+
+bootJar.finalizedBy(copyConfig)
+dist.dependsOn(bootJar)
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
