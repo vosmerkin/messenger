@@ -14,3 +14,4 @@ yum install bellsoft-java17 -y
 
 mkdir /opt/messenger_backend
 chown ec2-user /opt/messenger_backend
+

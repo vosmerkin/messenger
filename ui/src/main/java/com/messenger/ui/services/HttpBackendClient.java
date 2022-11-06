@@ -29,7 +29,7 @@ public class HttpBackendClient {
     public UserDto userRequest(String name) throws IOException, InterruptedException, UserNotFoundException {
         UserDto result;
         String resultString;
-        request = HttpRequest.newBuilder(URI.create(Adresses.USER_REQUEST + name))
+        request = HttpRequest.newBuilder(URI.create(Addresses.USER_REQUEST + name))
                 .GET()
                 .build();
         HttpResponse<String> response = null;
@@ -44,7 +44,7 @@ public class HttpBackendClient {
     public UserDto userUpdate(UserDto data) throws IOException, InterruptedException {
         UserDto result;
         String resultString;
-        request = HttpRequest.newBuilder(URI.create(Adresses.UPDATE))
+        request = HttpRequest.newBuilder(URI.create(Addresses.UPDATE))
                 .header("Content-Type", "application/json")
                 .PUT(HttpRequest.BodyPublishers.ofString(JsonMapper.toJson(data)))
                 .build();
@@ -58,7 +58,7 @@ public class HttpBackendClient {
     public RoomDto roomRequest(String roomName) throws IOException, InterruptedException, RoomNotFoundException {
         RoomDto roomDto;
         String resultString;
-        request = HttpRequest.newBuilder(URI.create(Adresses.ROOM_REQUEST + roomName))
+        request = HttpRequest.newBuilder(URI.create(Addresses.ROOM_REQUEST + roomName))
                 .GET()
                 .build();
         HttpResponse<String> response = null;
