@@ -3,6 +3,8 @@ package com.messenger.common.dto;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -30,7 +32,9 @@ public class RoomDto implements Serializable {
     }
 
     public Set<UserDto> getRoomUsers() {
-        return roomUsers;
+        Set<UserDto> users = new HashSet<>();
+        users.addAll(roomUsers);
+        return users;
     }
 
     @Override
