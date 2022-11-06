@@ -2,8 +2,9 @@
 
 This project is created for training Java knowledge. It will consist of two modules - backend an UI.
 
+## Requirements
 
-
+JDK11 or later
 
 ## Tech Stack
 
