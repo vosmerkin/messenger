@@ -1,5 +1,6 @@
 package com.messenger.ui.services;
 
+import com.messenger.common.dto.NewRoomDto;
 import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
 import org.slf4j.Logger;
@@ -93,10 +94,11 @@ public class UiAction {
     }
 
     private RoomDto createRoom(String roomName) {
-        RoomDto roomDto = new RoomDto(null, roomName);
+        NewRoomDto newRoomDto = new NewRoomDto(roomName);
+        RoomDto roomDto = null;
         try {
             //get roomDto
-            roomDto = httpBackendClient.roomCreate(roomDto);
+            roomDto = httpBackendClient.roomCreate(newRoomDto);
         } catch (IOException ex) {
             log.debug(String.valueOf(ex));
             JOptionPane.showMessageDialog(null,

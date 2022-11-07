@@ -2,44 +2,28 @@ package com.messenger.common.dto;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class RoomDto implements Serializable {
+public class NewRoomDto implements Serializable {
+    private Integer id;
     @NotNull
-    private final Integer id;
-    @NotNull
-    private String roomName;
-
+    private final String roomName;
     private Set<UserDto> roomUsers;
 
-    public RoomDto(Integer id) {
-        this.id = id;
-    }
-
-    public interface NewRoom {
+    public NewRoomDto( String roomName) {
+        this.roomName = roomName;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public String getRoomName() {
-        return roomName;
-    }
-
-    public Set<UserDto> getRoomUsers() {
-        Set<UserDto> users = new HashSet<>();
-        users.addAll(roomUsers);
-        return users;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        RoomDto entity = (RoomDto) o;
+        NewRoomDto entity = (NewRoomDto) o;
         return Objects.equals(this.id, entity.id) &&
                 Objects.equals(this.roomName, entity.roomName) &&
                 Objects.equals(this.roomUsers, entity.roomUsers);
