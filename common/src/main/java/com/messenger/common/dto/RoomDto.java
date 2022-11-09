@@ -18,9 +18,6 @@ public class RoomDto implements Serializable {
         this.id = id;
     }
 
-    public interface NewRoom {
-    }
-
     public Integer getId() {
         return id;
     }

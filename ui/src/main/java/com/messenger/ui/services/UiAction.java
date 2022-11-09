@@ -20,15 +20,15 @@ public class UiAction {
             user.setActiveStatus(true);
             user = httpBackendClient.userUpdate(user);
         } catch (IOException ex) {
-            log.debug(String.valueOf(ex));
             JOptionPane.showMessageDialog(null,
                     "Connection problem. Try again later ",
                     "HttpClient Error",
                     JOptionPane.INFORMATION_MESSAGE);
+            log.debug("IOException to remote address {}", ex);
         } catch (InterruptedException ex) {
-            log.debug(String.valueOf(ex));
+            log.debug("InterruptedException {}", ex);
         } catch (UserNotFoundException ex) {
-            log.debug(String.valueOf(ex));
+            log.debug("UserNotFoundException. Username - {}. {}", userName, ex);
             if (JOptionPane.showConfirmDialog(null,
                     "User " + userName + " not found. Do you wish to register",
                     "Warning",
@@ -38,8 +38,6 @@ public class UiAction {
                         "User " + userName + " created. You can log in",
                         "Registration",
                         JOptionPane.INFORMATION_MESSAGE);
-            } else {
-
             }
         }
         return user;
@@ -67,15 +65,15 @@ public class UiAction {
             //get roomDto
             roomDto = httpBackendClient.roomRequest(roomName);
         } catch (IOException ex) {
-            log.debug(String.valueOf(ex));
+            log.debug("IOException to remote address {}", ex);
             JOptionPane.showMessageDialog(null,
                     "Connection problem. Try again later ",
                     "HttpClient Error",
                     JOptionPane.INFORMATION_MESSAGE);
         } catch (InterruptedException ex) {
-            log.debug(String.valueOf(ex));
+            log.debug("InterruptedException {}", ex);
         } catch (RoomNotFoundException ex) {
-            log.debug(String.valueOf(ex));
+            log.debug("RoomNotFoundException. Roomname - {}. {}", roomName, ex);
             if (JOptionPane.showConfirmDialog(null,
                     "Room " + roomName + " not found. Do you wish to create?",
                     "Warning",
@@ -100,13 +98,13 @@ public class UiAction {
             //get roomDto
             roomDto = httpBackendClient.roomCreate(newRoomDto);
         } catch (IOException ex) {
-            log.debug(String.valueOf(ex));
+            log.debug("IOException to remote address {}", ex);
             JOptionPane.showMessageDialog(null,
                     "Connection problem. Try again later ",
                     "HttpClient Error",
                     JOptionPane.INFORMATION_MESSAGE);
         } catch (InterruptedException ex) {
-            log.debug(String.valueOf(ex));
+            log.debug("InterruptedException {}", ex);
         }
         return roomDto;
     }

@@ -18,7 +18,7 @@ import java.net.http.HttpResponse;
 public class HttpBackendClient {
     private static final Logger log = LoggerFactory.getLogger(HttpBackendClient.class);
 
-
+    String backendHost = PropertyManager.getProperty("backend.host");
     private HttpClient client = HttpClient.newHttpClient();
     private HttpRequest request;
 
@@ -31,7 +31,7 @@ public class HttpBackendClient {
         UserDto result;
         String resultString;
         String userRequestAddress = PropertyManager.getProperty("backend.user_request") + userName;
-        request = HttpRequest.newBuilder(URI.create(userRequestAddress))
+        request = HttpRequest.newBuilder(URI.create(backendHost + userRequestAddress))
                 .GET()
                 .build();
         HttpResponse<String> response = null;
@@ -47,7 +47,7 @@ public class HttpBackendClient {
         UserDto result;
         String resultString;
         String userUpdateAddress = PropertyManager.getProperty("backend.user_update");
-        request = HttpRequest.newBuilder(URI.create(userUpdateAddress))
+        request = HttpRequest.newBuilder(URI.create(backendHost + userUpdateAddress))
                 .header("Content-Type", "application/json")
                 .PUT(HttpRequest.BodyPublishers.ofString(JsonMapper.toJson(userDto)))
                 .build();
@@ -62,7 +62,7 @@ public class HttpBackendClient {
         RoomDto roomDto;
         String resultString;
         String roomRequestAddress = PropertyManager.getProperty("backend.room_request") + roomName;
-        request = HttpRequest.newBuilder(URI.create(roomRequestAddress))
+        request = HttpRequest.newBuilder(URI.create(backendHost + roomRequestAddress))
                 .GET()
                 .build();
         HttpResponse<String> response = null;
@@ -73,11 +73,11 @@ public class HttpBackendClient {
         return roomDto;
     }
 
-    public RoomDto roomCreate(NewRoomDto newRoomDto) throws IOException, InterruptedException {
+    public RoomDto roomCreate(NewRoomDto newRoomDto) throws InterruptedException, IOException {
         RoomDto roomDto;
         String resultString;
-        String roomRequestAddress = PropertyManager.getProperty("backend.room_create");
-        request = HttpRequest.newBuilder(URI.create(Adresses.ROOM_REQUEST))
+        String roomCreateAddress = PropertyManager.getProperty("backend.room_create");
+        request = HttpRequest.newBuilder(URI.create(backendHost + roomCreateAddress))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(JsonMapper.toJson(newRoomDto)))
                 .build();
