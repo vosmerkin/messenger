@@ -99,7 +99,8 @@ public class StartForm {
                     protected Object doInBackground() throws Exception {
                         String roomName = roomNameTextField.getName();
                         currentRoom = uiAction.roomEnter(roomName);
-
+                        //fillRoomUserList
+                        //fillMessagesFromHistory
 
                         return null;
                     }
