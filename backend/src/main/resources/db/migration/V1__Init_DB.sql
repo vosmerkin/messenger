@@ -31,7 +31,7 @@ create table tbl_msg (
  create table tbl_room_users (
     room_id int4 not null,
     user_id int4 not null,
-    primary key (room_id, user_id))
+    primary key (room_id, user_id));
 
  alter table tbl_contacts
     add constraint user_contacts_fk
