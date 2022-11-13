@@ -27,7 +27,7 @@ public class HttpBackendClient {
     }
 
 
-    public UserDto userRequest(String userName) throws IOException, InterruptedException, UserNotFoundException {
+    public UserDto userRequest(String userName) throws InterruptedException, UserNotFoundException, IOException {
         UserDto result;
         String resultString;
         String userRequestAddress = PropertyManager.getProperty("backend.user_request") + userName;
@@ -35,7 +35,11 @@ public class HttpBackendClient {
                 .GET()
                 .build();
         HttpResponse<String> response = null;
-        response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException e) {
+            throw new IOException("IOException to remote address " + userRequestAddress);
+        }
         resultString = response.body();
         if (response.statusCode() == 404) throw new UserNotFoundException("User '" + userName + "' not found");
         result = JsonMapper.fromJson(resultString, UserDto.class);
@@ -52,7 +56,11 @@ public class HttpBackendClient {
                 .PUT(HttpRequest.BodyPublishers.ofString(JsonMapper.toJson(userDto)))
                 .build();
         HttpResponse<String> response = null;
-        response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException e) {
+            throw new IOException("IOException to remote address " + userUpdateAddress);
+        }
         resultString = response.body();
         result = JsonMapper.fromJson(resultString, UserDto.class);
         return result;
@@ -66,7 +74,11 @@ public class HttpBackendClient {
                 .GET()
                 .build();
         HttpResponse<String> response = null;
-        response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException e) {
+            throw new IOException("IOException to remote address " + roomRequestAddress);
+        }
         resultString = response.body();
         if (response.statusCode() == 404) throw new RoomNotFoundException("Room '" + roomName + "' not found");
         roomDto = JsonMapper.fromJson(resultString, RoomDto.class);
@@ -82,7 +94,11 @@ public class HttpBackendClient {
                 .POST(HttpRequest.BodyPublishers.ofString(JsonMapper.toJson(newRoomDto)))
                 .build();
         HttpResponse<String> response = null;
-        response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException e) {
+            throw new IOException("IOException to remote address " + roomCreateAddress);
+        }
         resultString = response.body();
         roomDto = JsonMapper.fromJson(resultString, RoomDto.class);
         return roomDto;

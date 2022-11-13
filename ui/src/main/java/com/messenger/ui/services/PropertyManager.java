@@ -10,7 +10,7 @@ import java.util.Properties;
 
 public class PropertyManager {
     private static final Logger log = LoggerFactory.getLogger(PropertyManager.class);
-    private final static String NETWORK_PROPERTY_FILE_NAME = "src/main/resources/network.properties";
+    private final static String NETWORK_PROPERTY_FILE_NAME = "ui/src/main/resources/network.properties";
 
     private static final Properties property = new Properties();
 
