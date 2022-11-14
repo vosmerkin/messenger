@@ -36,6 +36,8 @@ public class HttpBackendClient {
                 .build();
         HttpResponse<String> response = null;
         try {
+            log.info("Request user {} info from {}", userName, userRequestAddress);
+
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
             throw new IOException("IOException to remote address " + userRequestAddress);

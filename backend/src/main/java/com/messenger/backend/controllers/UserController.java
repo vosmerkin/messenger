@@ -22,10 +22,12 @@ public class UserController {
     @GetMapping("/getUser")    //request userinfo for logged in user
     public UserDto getUser(@RequestParam(value = "name") String name) {
         log.info("/getUser?name={}", name);
+        System.out.println("getUser " + name);
         UserEntity user = userService.getByUserName(name);
         UserDto responseUserDto = modelMapper.map(user, UserDto.class);
         return responseUserDto;
     }
+//    curl -XGET  \"http://localhost:8080/getUser?name=test_name\" "
 
     @GetMapping("/getUserStatus")    //request user Active status
     public Boolean getUserStatus(@RequestParam(value = "id") Integer id) {
