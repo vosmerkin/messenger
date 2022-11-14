@@ -8,6 +8,7 @@ import com.messenger.common.dto.UserDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -30,14 +31,12 @@ public class HttpBackendClient {
     public UserDto userRequest(String userName) throws InterruptedException, UserNotFoundException, IOException {
         UserDto result;
         String resultString;
-        String userRequestAddress = PropertyManager.getProperty("backend.user_request") + userName;
-        request = HttpRequest.newBuilder(URI.create(backendHost + userRequestAddress))
+        String userRequestAddress = PropertyManager.getProperty("backend.user_request" + userName) ;
+        request = HttpRequest.newBuilder(URI.create(backendHost + userRequestAddress ))
                 .GET()
                 .build();
         HttpResponse<String> response = null;
         try {
-            log.info("Request user {} info from {}", userName, userRequestAddress);
-
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
             throw new IOException("IOException to remote address " + userRequestAddress);

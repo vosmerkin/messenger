@@ -23,7 +23,7 @@ public class PropertyManager {
     }
 
     public static String getProperty(String propertyName) {
-        return property.getProperty("propertyName");
+        return property.getProperty(propertyName);
     }
 
 }
