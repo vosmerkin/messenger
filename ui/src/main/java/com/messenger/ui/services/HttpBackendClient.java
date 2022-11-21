@@ -8,7 +8,6 @@ import com.messenger.common.dto.UserDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -60,7 +59,7 @@ public class HttpBackendClient {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            throw new IOException("IOException to remote address " + userUpdateAddress);
+            throw new HttpClientIOException("IOException to remote address " + userUpdateAddress);
         }
         resultString = response.body();
         result = JsonMapper.fromJson(resultString, UserDto.class);
@@ -78,7 +77,7 @@ public class HttpBackendClient {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            throw new IOException("IOException to remote address " + roomRequestAddress);
+            throw new HttpClientIOException("IOException to remote address " + roomRequestAddress);
         }
         resultString = response.body();
         if (response.statusCode() == 404) throw new RoomNotFoundException("Room '" + roomName + "' not found");
