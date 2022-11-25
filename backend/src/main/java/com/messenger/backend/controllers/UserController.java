@@ -1,6 +1,7 @@
 package com.messenger.backend.controllers;
 
 import com.messenger.backend.entity.UserEntity;
+import com.messenger.backend.exception.FileNotFoundException;
 import com.messenger.backend.services.UserService;
 import com.messenger.common.dto.UserDto;
 import org.modelmapper.ModelMapper;
@@ -17,13 +18,18 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    private ModelMapper modelMapper;
+    private ModelMapper modelMapper = new ModelMapper();
 
     @GetMapping("/getUser")    //request userinfo for logged in user
     public UserDto getUser(@RequestParam(value = "name") String name) {
         log.info("/getUser?name={}", name);
         UserEntity user = userService.getByUserName(name);
-        UserDto responseUserDto = modelMapper.map(user, UserDto.class);
+        UserDto responseUserDto;
+        if (user == null) {
+            throw new FileNotFoundException("User " + name + " not found");
+        } else {
+            responseUserDto = modelMapper.map(user, UserDto.class);
+        }
         return responseUserDto;
     }
 //    curl -XGET  \"http://localhost:8080/getUser?name=test_name\" "

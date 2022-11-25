@@ -30,8 +30,9 @@ public class HttpBackendClient {
     public UserDto userRequest(String userName) throws InterruptedException, UserNotFoundException, IOException {
         UserDto result;
         String resultString;
-        String userRequestAddress = PropertyManager.getProperty("backend.user_request" + userName) ;
-        request = HttpRequest.newBuilder(URI.create(backendHost + userRequestAddress ))
+        String userRequestAddress = PropertyManager.getProperty("backend.user_request") + userName;
+        log.debug("Connecting remote host {}", backendHost + userRequestAddress);
+        request = HttpRequest.newBuilder(URI.create(backendHost + userRequestAddress))
                 .GET()
                 .build();
         HttpResponse<String> response = null;
@@ -41,6 +42,8 @@ public class HttpBackendClient {
             throw new IOException("IOException to remote address " + userRequestAddress);
         }
         resultString = response.body();
+        log.debug("userRequest response.statusCode {}", response.statusCode());
+        log.debug("userRequest resultString {}", resultString);
         if (response.statusCode() == 404) throw new UserNotFoundException("User '" + userName + "' not found");
         result = JsonMapper.fromJson(resultString, UserDto.class);
         return result;
@@ -64,6 +67,12 @@ public class HttpBackendClient {
         resultString = response.body();
         result = JsonMapper.fromJson(resultString, UserDto.class);
         return result;
+    }
+
+    public UserDto userCreate(String userName) {
+        UserDto userDto;
+        String resultString;
+        String userCreateAddress = PropertyManager.getProperty("backend.user_create");
     }
 
     public RoomDto roomRequest(String roomName) throws IOException, InterruptedException, RoomNotFoundException {
@@ -103,5 +112,6 @@ public class HttpBackendClient {
         roomDto = JsonMapper.fromJson(resultString, RoomDto.class);
         return roomDto;
     }
+
 
 }

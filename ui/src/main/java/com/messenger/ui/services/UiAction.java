@@ -33,6 +33,7 @@ public class UiAction {
                     "Warning",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 //register user
+                user = httpBackendClient.userCreate(userName);
                 JOptionPane.showMessageDialog(null,
                         "User " + userName + " created. You can log in",
                         "Registration",
