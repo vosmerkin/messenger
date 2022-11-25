@@ -1,8 +1,11 @@
 package com.messenger.ui.services;
 
 import com.messenger.common.dto.NewRoomDto;
+import com.messenger.common.dto.NewUserDto;
 import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
+import com.messenger.ui.exceptions.RoomNotFoundException;
+import com.messenger.ui.exceptions.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.swing.*;
@@ -13,11 +16,11 @@ public class UiAction {
     private HttpBackendClient httpBackendClient = new HttpBackendClient();
 
     public UserDto userLogInAction(String userName) {
-        UserDto user = null;
+        UserDto userDto = null;
         try {
-            user = httpBackendClient.userRequest(userName);
-            user.setActiveStatus(true);
-            user = httpBackendClient.userUpdate(user);
+            userDto = httpBackendClient.userRequest(userName);
+            userDto.setActiveStatus(true);
+            userDto = httpBackendClient.userUpdate(userDto);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null,
                     "Connection problem. Try again later ",
@@ -33,14 +36,14 @@ public class UiAction {
                     "Warning",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 //register user
-                user = httpBackendClient.userCreate(userName);
+                userDto = createUser(userName);
                 JOptionPane.showMessageDialog(null,
                         "User " + userName + " created. You can log in",
                         "Registration",
                         JOptionPane.INFORMATION_MESSAGE);
             }
         }
-        return user;
+        return userDto;
     }
 
     public UserDto userLogOffAction(UserDto user) {
@@ -57,6 +60,24 @@ public class UiAction {
             log.debug(String.valueOf(ex));
         }
         return user;
+    }
+
+    private UserDto createUser(String userName) {
+        NewUserDto newUserDto = new NewUserDto(userName);
+        UserDto userDto = null;
+        try {
+            //get roomDto
+            userDto = httpBackendClient.userCreate(newUserDto);
+        } catch (IOException ex) {
+            log.debug("IOException to remote address {}", ex);
+            JOptionPane.showMessageDialog(null,
+                    "Connection problem. Try again later ",
+                    "HttpClient Error",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (InterruptedException ex) {
+            log.debug("InterruptedException {}", ex);
+        }
+        return userDto;
     }
 
     public RoomDto roomEnter(String roomName) {

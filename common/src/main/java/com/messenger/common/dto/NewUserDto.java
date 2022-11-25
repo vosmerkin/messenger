@@ -2,49 +2,23 @@ package com.messenger.common.dto;
 
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
-public class UserDto implements Serializable {
+public class NewUserDto implements Serializable {
 
-
-    @NotNull(groups = {UpdateContactList.class})
     private Integer id;
-    @Null(groups = {UpdateContactList.class})
+    @NotNull
     private String userName;
-    @Null(groups = {UpdateContactList.class})
     private Date lastActionDateTime;
-
-
-    @Null(groups = {UpdateContactList.class})
     private Boolean activeStatus;
-    @NotNull(groups = {UpdateContactList.class})
     private Set<UserDto> contactList;
 
 
-    public UserDto(@NotNull(groups = {UpdateContactList.class}) Integer id,
-                   @Null(groups = {UpdateContactList.class}) String userName,
-                   @Null(groups = {UpdateContactList.class}) Date lastActionDateTime,
-                   @Null(groups = {UpdateContactList.class}) Boolean activeStatus,
-                   @NotNull(groups = {UpdateContactList.class}) Set<UserDto> contactList) {
-        this.id = id;
+    public NewUserDto(String userName) {
         this.userName = userName;
-        this.lastActionDateTime = lastActionDateTime;
-        this.activeStatus = activeStatus;
-        this.contactList = contactList;
-    }
-
-
-
-
-    public interface UpdateContactList {
-    }
-
-    public void setActiveStatus(Boolean activeStatus) {
-        this.activeStatus = activeStatus;
     }
 
     public Integer getId() {
@@ -55,24 +29,12 @@ public class UserDto implements Serializable {
         return userName;
     }
 
-    public Date getLastActionDateTime() {
-        return lastActionDateTime;
-    }
-
-    public Boolean getActiveStatus() {
-        return activeStatus;
-    }
-
-    public Set<UserDto> getContactList() {
-        return contactList;
-    }
-
     @Override
     public boolean equals(Object aThat) {
         //a standard implementation pattern
         if (this == aThat) return true;
-        if (!(aThat instanceof UserDto)) return false;
-        UserDto that = (UserDto) aThat;
+        if (!(aThat instanceof NewUserDto)) return false;
+        NewUserDto that = (NewUserDto) aThat;
         for (int i = 0; i < this.getSigFields().length; ++i) {
             if (!Objects.equals(this.getSigFields()[i], that.getSigFields()[i])) {
                 return false;
@@ -107,7 +69,6 @@ public class UserDto implements Serializable {
         s.append((contactList != null) ? contactList.toString() : "null");
         return s.toString();
     }
-
 
 
 }

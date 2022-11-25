@@ -1,4 +1,4 @@
-package com.messenger.ui.services;
+package com.messenger.ui.exceptions;
 
 import java.io.IOException;
 
