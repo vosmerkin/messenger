@@ -1,4 +1,4 @@
-package com.messenger.ui.services;
+package com.messenger.ui.exceptions;
 
 public class UserNotFoundException extends Exception {
     public UserNotFoundException(String message) {
