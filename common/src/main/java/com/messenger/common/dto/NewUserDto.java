@@ -16,6 +16,8 @@ public class NewUserDto implements Serializable {
     private Boolean activeStatus;
     private Set<UserDto> contactList;
 
+    public NewUserDto() {
+    }
 
     public NewUserDto(String userName) {
         this.userName = userName;
@@ -30,45 +32,31 @@ public class NewUserDto implements Serializable {
     }
 
     @Override
-    public boolean equals(Object aThat) {
-        //a standard implementation pattern
-        if (this == aThat) return true;
-        if (!(aThat instanceof NewUserDto)) return false;
-        NewUserDto that = (NewUserDto) aThat;
-        for (int i = 0; i < this.getSigFields().length; ++i) {
-            if (!Objects.equals(this.getSigFields()[i], that.getSigFields()[i])) {
-                return false;
-            }
-        }
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NewUserDto that = (NewUserDto) o;
+        return Objects.equals(id, that.id)
+                && Objects.equals(userName, that.userName)
+                && Objects.equals(lastActionDateTime, that.lastActionDateTime)
+                && Objects.equals(activeStatus, that.activeStatus)
+                && Objects.equals(contactList, that.contactList);
     }
 
     @Override
     public int hashCode() {
-        //simple one-line implementation
-        return Objects.hash(getSigFields());
+        return Objects.hash(id, userName, lastActionDateTime, activeStatus, contactList);
     }
 
-
-    private Object[] getSigFields() {
-        Object[] result = {id, userName, contactList};
-        return result;
-    }
-
+    @Override
     public String toString() {
-        StringBuilder s = new StringBuilder();
-        s.append("id: ");
-        s.append((id == null) ? "null" : id.toString());
-        s.append(", userName: ");
-        s.append((userName != null) ? userName.toString() : "null");
-        s.append(", activeStatus: ");
-        s.append((activeStatus) ? "online" : "offline");
-        s.append(", lastActionDateTime: ");
-        s.append((lastActionDateTime != null) ? lastActionDateTime.toString() : "null");
-        s.append(", contactList: ");
-        s.append((contactList != null) ? contactList.toString() : "null");
-        return s.toString();
+        return "NewUserDto{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", lastActionDateTime=" + lastActionDateTime +
+                ", activeStatus=" + activeStatus +
+                ", contactList=" + contactList +
+                '}';
     }
-
 
 }

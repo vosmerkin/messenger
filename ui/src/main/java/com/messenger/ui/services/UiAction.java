@@ -8,6 +8,7 @@ import com.messenger.ui.exceptions.RoomNotFoundException;
 import com.messenger.ui.exceptions.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.swing.*;
 import java.io.IOException;
 
@@ -20,7 +21,7 @@ public class UiAction {
         try {
             userDto = httpBackendClient.userRequest(userName);
             userDto.setActiveStatus(true);
-            userDto = httpBackendClient.userUpdate(userDto);
+//            userDto = httpBackendClient.userUpdate(userDto);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null,
                     "Connection problem. Try again later ",
@@ -63,11 +64,10 @@ public class UiAction {
     }
 
     private UserDto createUser(String userName) {
-        NewUserDto newUserDto = new NewUserDto(userName);
         UserDto userDto = null;
         try {
-            //get roomDto
-            userDto = httpBackendClient.userCreate(newUserDto);
+            log.info("Creating a new user: {}", userName);
+            userDto = httpBackendClient.userCreate(userName);
         } catch (IOException ex) {
             log.debug("IOException to remote address {}", ex);
             JOptionPane.showMessageDialog(null,
@@ -99,7 +99,7 @@ public class UiAction {
                     "Room " + roomName + " not found. Do you wish to create?",
                     "Warning",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-        //if not present - create room
+                //if not present - create room
                 roomDto = createRoom(roomName);
                 JOptionPane.showMessageDialog(null,
                         "Room " + roomName + " created. You can now enter",

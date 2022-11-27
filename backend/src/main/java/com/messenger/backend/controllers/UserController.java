@@ -40,10 +40,16 @@ public class UserController {
         return userService.getUserStatus(id);
     }
 
+    @GetMapping(value = "/createUser", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public UserDto createUser(@RequestParam(value = "username") String userName) {
+        log.info("/createUser_{}", userName);
+        UserEntity user = userService.createUser(userName);
+        UserDto responseUserDto = modelMapper.map(user, UserDto.class);
+        return responseUserDto;
+    }
+
     @PutMapping(value = "/updateUser", consumes = MediaType.APPLICATION_JSON_VALUE) //update contact list
-
-
-    public UserDto updateUser(@Validated(UserDto.UpdateContactList.class) @RequestBody UserDto userDto) {
+    public UserDto updateUser(@RequestBody UserDto userDto) {
         log.info("/updateUser_{}", userDto);
         UserEntity requestUser = modelMapper.map(userDto, UserEntity.class);
         UserEntity user = userService.updateContactList(requestUser);
