@@ -23,6 +23,7 @@ public class UserService {
 
     public Boolean getUserStatus(Integer id) {
         UserEntity user = userRepository.findAllById(id);
+
         boolean status = user.getActiveStatus();
         return status;
     }

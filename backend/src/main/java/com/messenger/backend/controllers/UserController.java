@@ -1,7 +1,7 @@
 package com.messenger.backend.controllers;
 
 import com.messenger.backend.entity.UserEntity;
-import com.messenger.backend.exception.FileNotFoundException;
+import com.messenger.backend.exception.UserNotFoundException;
 import com.messenger.backend.services.UserService;
 import com.messenger.common.dto.UserDto;
 import org.modelmapper.ModelMapper;
@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,7 +25,7 @@ public class UserController {
         UserEntity user = userService.getByUserName(name);
         UserDto responseUserDto;
         if (user == null) {
-            throw new FileNotFoundException("User " + name + " not found");
+            throw new UserNotFoundException("User " + name + " not found");
         } else {
             responseUserDto = modelMapper.map(user, UserDto.class);
         }
@@ -41,8 +40,8 @@ public class UserController {
     }
 
     @GetMapping(value = "/createUser", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public UserDto createUser(@RequestParam(value = "username") String userName) {
-        log.info("/createUser_{}", userName);
+    public UserDto createUser(@RequestParam(value = "name") String userName) {
+        log.info("/createUser?name={}", userName);
         UserEntity user = userService.createUser(userName);
         UserDto responseUserDto = modelMapper.map(user, UserDto.class);
         return responseUserDto;
@@ -53,7 +52,12 @@ public class UserController {
         log.info("/updateUser_{}", userDto);
         UserEntity requestUser = modelMapper.map(userDto, UserEntity.class);
         UserEntity user = userService.updateContactList(requestUser);
-        UserDto responseUserDto = modelMapper.map(user, UserDto.class);
+        UserDto responseUserDto;
+        if (user == UserEntity.EMPTY_ENTITY) {
+            throw new UserNotFoundException("User " + userDto.getUserName() + " not found");
+        } else {
+            responseUserDto = modelMapper.map(user, UserDto.class);
+        }
         return responseUserDto;
     }
 
