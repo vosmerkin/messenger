@@ -29,6 +29,7 @@ public class UserController {
         } else {
             responseUserDto = modelMapper.map(user, UserDto.class);
         }
+        log.info("/getUser?name={} returning {}", name, responseUserDto);
         return responseUserDto;
     }
 //    curl -XGET  \"http://localhost:8080/getUser?name=test_name\" "
