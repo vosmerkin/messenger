@@ -41,8 +41,9 @@ public class HttpBackendClient {
 
 
     public UserDto userRequest(String userName) throws InterruptedException, UserNotFoundException, IOException {
-        log.info("Requesting user {} at remote host: {}", userName, userRequestAddress);
-        var request = HttpRequest.newBuilder(URI.create(userRequestAddress))
+        var url = userRequestAddress + userName;
+        log.info("Requesting user {} at remote host: {}", userName, url);
+        var request = HttpRequest.newBuilder(URI.create(url))
                 .GET()
                 .build();
         HttpResponse<String> response;
@@ -52,7 +53,7 @@ public class HttpBackendClient {
             throw new HttpClientIOException("IOException to remote address " + userRequestAddress);
         }
 
-        if (response.statusCode() > 404) throw new UserNotFoundException("User '" + userName + "' not found");
+        if (response.statusCode() == 404) throw new UserNotFoundException("User '" + userName + "' not found");
 
         return JsonMapper.fromJson(response.body(), UserDto.class);
     }
@@ -76,8 +77,9 @@ public class HttpBackendClient {
     }
 
     public UserDto userCreate(String userName) throws InterruptedException, IOException {
-        log.debug("Creating a new user: {}, url address: {}", userName, userCreateAddress);
-        var request = HttpRequest.newBuilder(URI.create(userCreateAddress + userName))
+        var url = userCreateAddress + userName;
+        log.debug("Creating a new user: {}, url address: {}", userName, url);
+        var request = HttpRequest.newBuilder(URI.create(url))
                 .header(CONTENT_TYPE, APPLICATION_JSON)
                 .GET()
                 .build();
@@ -86,10 +88,10 @@ public class HttpBackendClient {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
             log.error("User creation has failed: {}", e.getMessage());
-            throw new HttpClientIOException("IOException to remote address " + userCreateAddress);
+            throw new HttpClientIOException("IOException to remote address " + url);
         }
         if (response.statusCode() > 399) {
-            throw new HttpClientIOException("IOException to remote address " + userCreateAddress);
+            throw new HttpClientIOException("IOException to remote address " + url);
         }
         log.info("A new user has been created: {}. Server response: {}", userName, response.body());
         return JsonMapper.fromJson(response.body(), UserDto.class);

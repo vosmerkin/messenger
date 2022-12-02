@@ -41,7 +41,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/createUser", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public UserDto createUser(@RequestParam(value = "name") String userName) {
+    public UserDto createUser(@RequestParam(value = "username") String userName) {
         log.info("/createUser?name={}", userName);
         UserEntity user = userService.createUser(userName);
         UserDto responseUserDto = modelMapper.map(user, UserDto.class);
