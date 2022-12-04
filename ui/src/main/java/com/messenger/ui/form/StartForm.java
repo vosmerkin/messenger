@@ -62,7 +62,7 @@ public class StartForm {
                                 userLoginButton.setText("User Logoff");
                                 userNameTextField.setEnabled(false);
                                 userLoggedInStatus = true;
-                                contactListModel.addAll(currentUser.getContactList());
+//                                contactListModel.addAll(currentUser.getContactList());
                                 contactList.setModel(contactListModel);
                                 //fill Contact List from UserEntity
                             }

@@ -5,6 +5,9 @@ import com.messenger.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Date;
+
 @Service
 public class UserService {
     @Autowired
@@ -13,25 +16,31 @@ public class UserService {
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
     public UserEntity getByUserName(String userName) {
         return userRepository.findByUserName(userName);
     }
 
     public Boolean getUserStatus(Integer id) {
-        Boolean status =false;
         UserEntity user = userRepository.findAllById(id);
-        status = user.getActiveStatus();
+
+        boolean status = user.getActiveStatus();
         return status;
     }
 
+    public UserEntity createUser(String userName) {
+        UserEntity newUser = new UserEntity(null, userName, new Date(), true, Collections.emptySet());
+        return userRepository.save(newUser);
+    }
 
     public UserEntity updateContactList(UserEntity userEntity) {
         Integer id = userEntity.getId();
+        UserEntity result = UserEntity.EMPTY_ENTITY;
         if (userRepository.existsById(id)) {
             UserEntity existingUser = userRepository.getReferenceById(id);
             existingUser.setContactList(userEntity.getContactList());
-            return userRepository.save(existingUser);
+            result = userRepository.save(existingUser);
         }
-        return null;
+        return result;
     }
 }

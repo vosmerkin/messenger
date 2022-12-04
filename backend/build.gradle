@@ -43,7 +43,7 @@ task copyConfig(type: Copy) {
 	from(files('src/main/resources'))
 	include('application*.properties')
 	include('spring-*.conf')
-	into 'build/libs/conf'
+	into 'build/libs/config'
 }
 
 task dist(type: Zip) {
