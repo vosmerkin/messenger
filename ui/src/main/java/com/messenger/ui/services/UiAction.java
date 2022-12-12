@@ -113,11 +113,10 @@ public class UiAction {
     }
 
     private RoomDto createRoom(String roomName) {
-        NewRoomDto newRoomDto = new NewRoomDto(roomName);
         RoomDto roomDto = null;
         try {
             //get roomDto
-            roomDto = httpBackendClient.roomCreate(newRoomDto);
+            roomDto = httpBackendClient.roomCreate(roomName);
         } catch (IOException ex) {
             log.debug("IOException to remote address {}", ex);
             JOptionPane.showMessageDialog(null,
@@ -127,6 +126,11 @@ public class UiAction {
         } catch (InterruptedException ex) {
             log.debug("InterruptedException {}", ex);
         }
+        return roomDto;
+    }
+
+    public RoomDto roomLeave(RoomDto currentRoom) {
+        RoomDto roomDto = null;
         return roomDto;
     }
 }

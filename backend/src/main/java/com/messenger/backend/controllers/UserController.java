@@ -1,8 +1,10 @@
 package com.messenger.backend.controllers;
 
+import com.messenger.backend.entity.RoomEntity;
 import com.messenger.backend.entity.UserEntity;
 import com.messenger.backend.exception.UserNotFoundException;
 import com.messenger.backend.services.UserService;
+import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -17,6 +19,7 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
     private ModelMapper modelMapper = new ModelMapper();
 
     @GetMapping("/getUser")    //request userinfo for logged in user
@@ -41,7 +44,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/createUser", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public UserDto createUser(@RequestParam(value = "username") String userName) {
+    public UserDto createUser(@RequestParam(value = "name") String userName) {
         log.info("/createUser?name={}", userName);
         UserEntity user = userService.createUser(userName);
         UserDto responseUserDto = modelMapper.map(user, UserDto.class);
@@ -52,7 +55,7 @@ public class UserController {
     public UserDto updateUser(@RequestBody UserDto userDto) {
         log.info("/updateUser_{}", userDto);
         UserEntity requestUser = modelMapper.map(userDto, UserEntity.class);
-        UserEntity user = userService.updateContactList(requestUser);
+        UserEntity user = userService.updateUserStatus(requestUser);
         UserDto responseUserDto;
         if (user == UserEntity.EMPTY_ENTITY) {
             throw new UserNotFoundException("User " + userDto.getUserName() + " not found");
@@ -61,6 +64,7 @@ public class UserController {
         }
         return responseUserDto;
     }
+
 
 
 }

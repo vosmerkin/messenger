@@ -50,7 +50,7 @@ public class HttpBackendClient {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            throw new HttpClientIOException("IOException to remote address " + userRequestAddress);
+            throw new HttpClientIOException("IOException to remote address " + url);
         }
 
         if (response.statusCode() == 404) throw new UserNotFoundException("User '" + userName + "' not found");
@@ -98,37 +98,37 @@ public class HttpBackendClient {
     }
 
     public RoomDto roomRequest(String roomName) throws IOException, InterruptedException, RoomNotFoundException {
-        RoomDto roomDto;
-        String resultString;
-        var request = HttpRequest.newBuilder(URI.create(roomRequestAddress + roomName))
+        var url = roomRequestAddress + roomName;
+        log.info("Requesting room {} at remote host: {}", roomName, url);
+        var request = HttpRequest.newBuilder(URI.create(url))
                 .GET()
                 .build();
         HttpResponse<String> response = null;
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            throw new HttpClientIOException("IOException to remote address " + roomRequestAddress);
+            throw new HttpClientIOException("IOException to remote address " + url);
         }
-        resultString = response.body();
         if (response.statusCode() == 404) throw new RoomNotFoundException("Room '" + roomName + "' not found");
-        roomDto = JsonMapper.fromJson(resultString, RoomDto.class);
-        return roomDto;
+        return JsonMapper.fromJson(response.body(), RoomDto.class);
     }
 
-    public RoomDto roomCreate(NewRoomDto newRoomDto) throws InterruptedException, IOException {
-        var request = HttpRequest.newBuilder(URI.create(roomCreateAddress))
+    public RoomDto roomCreate(String roomName) throws InterruptedException, IOException {
+        var url = roomCreateAddress + roomName;
+        log.debug("Creating a new room: {}, url address: {}", roomName, url);
+        var request = HttpRequest.newBuilder(URI.create(url))
                 .header(CONTENT_TYPE, APPLICATION_JSON)
-                .POST(HttpRequest.BodyPublishers.ofString(JsonMapper.toJson(newRoomDto)))
+                .GET()
                 .build();
         HttpResponse<String> response;
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            throw new HttpClientIOException("IOException to remote address " + roomCreateAddress);
+            throw new HttpClientIOException("IOException to remote address " + url);
         }
-        log.info("A new room has been created: {}. Server response: {}", newRoomDto, response.body());
+        log.info("A new room has been created: {}. Server response: {}", roomName, response.body());
         if (response.statusCode() > 399) {
-            throw new HttpClientIOException("IOException to remote address " + roomCreateAddress);
+            throw new HttpClientIOException("IOException to remote address " + url);
         }
 
         return JsonMapper.fromJson(response.body(), RoomDto.class);

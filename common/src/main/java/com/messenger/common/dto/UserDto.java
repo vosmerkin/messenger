@@ -14,20 +14,28 @@ public class UserDto implements Serializable {
     public UserDto() {
     }
 
-    public void setActiveStatus(Boolean activeStatus) {
-        this.activeStatus = activeStatus;
-    }
-
     public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getUserName() {
         return userName;
     }
 
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public Boolean getActiveStatus() {
         return activeStatus;
+    }
+
+    public void setActiveStatus(Boolean activeStatus) {
+        this.activeStatus = activeStatus;
     }
 
 

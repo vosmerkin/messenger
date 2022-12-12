@@ -59,12 +59,45 @@ public class UserEntity {
         this.id = id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public Integer getId() {
         return id;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public Date getLastActionDateTime() {
+        return lastActionDateTime;
+    }
+
+    public void setLastActionDateTime(Date lastActionDateTime) {
+        this.lastActionDateTime = lastActionDateTime;
+    }
+
+
     public Boolean getActiveStatus() {
         return activeStatus;
+    }
+
+    public void setActiveStatus(Boolean activeStatus) {
+        this.activeStatus = activeStatus;
+    }
+
+    public Set<RoomEntity> getRooms() {
+        return rooms;
+    }
+
+    public void setRooms(Set<RoomEntity> rooms) {
+        this.rooms = rooms;
     }
 
     public Set<UserEntity> getContactList() {
