@@ -27,6 +27,7 @@ public class HttpBackendClient {
     private final String userRequestAddress;
     private final String userUpdateAddress;
     private final String roomRequestAddress;
+    private final String roomUpdateUsersList;
 
 
     public HttpBackendClient() {
@@ -37,6 +38,7 @@ public class HttpBackendClient {
         userUpdateAddress = backendHost + PropertyManager.getProperty("backend.user_update");
         roomCreateAddress = backendHost + PropertyManager.getProperty("backend.room_create");
         roomRequestAddress = backendHost + PropertyManager.getProperty("backend.room_request");
+        roomUpdateUsersList = backendHost + PropertyManager.getProperty("backend.room_update_users");
     }
 
 
@@ -134,4 +136,21 @@ public class HttpBackendClient {
         return JsonMapper.fromJson(response.body(), RoomDto.class);
     }
 
+    public RoomDto roomUpdateUsersList(RoomDto currentRoom) throws InterruptedException, HttpClientIOException {
+        RoomDto result;
+        String resultString;
+        var request = HttpRequest.newBuilder(URI.create(roomUpdateUsersList))
+                .header(CONTENT_TYPE, APPLICATION_JSON)
+                .PUT(HttpRequest.BodyPublishers.ofString(JsonMapper.toJson(currentRoom)))
+                .build();
+        HttpResponse<String> response = null;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException e) {
+            throw new HttpClientIOException("IOException to remote address " + userUpdateAddress);
+        }
+        resultString = response.body();
+        result = JsonMapper.fromJson(resultString, RoomDto.class);
+        return result;
+    }
 }

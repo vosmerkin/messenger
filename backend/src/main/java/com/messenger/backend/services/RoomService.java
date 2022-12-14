@@ -28,6 +28,14 @@ public class RoomService {
     }
 
 
-    
-
+    public RoomEntity updateRoomUsers(RoomEntity roomEntity) {
+        Integer id = roomEntity.getId();
+        RoomEntity result = RoomEntity.EMPTY_ENTITY;
+        if (roomRepository.existsById(id)) {
+            RoomEntity existingRoom = roomRepository.getReferenceById(id);
+            existingRoom.setRoomUsers(roomEntity.getRoomUsers());
+            result = roomRepository.save(existingRoom);
+        }
+        return result;
+    }
 }

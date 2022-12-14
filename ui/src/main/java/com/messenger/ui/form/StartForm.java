@@ -102,7 +102,9 @@ public class StartForm {
                     protected Object doInBackground() throws Exception {
                         roomCreateConnectButton.setEnabled(false);
                         if (roomConnectedStatus) {
-                            RoomDto room = uiAction.roomLeave(currentRoom);
+                            if (currentRoom.getRoomUsers().contains(currentUser))
+                                currentRoom.getRoomUsers().remove(currentUser);
+                            RoomDto room = uiAction.leaveRoom(currentRoom);
                             if (room != null) {
                                 currentRoom = null;
                                 roomCreateConnectButton.setText("Enter Room");

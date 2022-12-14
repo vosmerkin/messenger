@@ -2,10 +2,13 @@ package com.messenger.backend.controllers;
 
 import com.messenger.backend.entity.RoomEntity;
 import com.messenger.backend.entity.RoomEntity;
+import com.messenger.backend.entity.UserEntity;
 import com.messenger.backend.exception.RoomNotFoundException;
+import com.messenger.backend.exception.UserNotFoundException;
 import com.messenger.backend.services.RoomService;
 import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.RoomDto;
+import com.messenger.common.dto.UserDto;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +47,20 @@ public class RoomController {
         log.info("/createRoom?name={}", roomName);
         RoomEntity room = roomService.createRoom(roomName);
         RoomDto responseRoomDto = modelMapper.map(room, RoomDto.class);
+        return responseRoomDto;
+    }
+
+    @PutMapping(value = "/updateRoomUsers", consumes = MediaType.APPLICATION_JSON_VALUE) //update room rooms list
+    public RoomDto updateRoomUsers(@RequestBody RoomDto roomDto) {
+        log.info("/updateRoomUsers_{}", roomDto);
+        RoomEntity requestRoom = modelMapper.map(roomDto, RoomEntity.class);
+        RoomEntity room = roomService.updateRoomUsers(requestRoom);
+        RoomDto responseRoomDto;
+        if (room == RoomEntity.EMPTY_ENTITY) {
+            throw new RoomNotFoundException("Room " + roomDto.getRoomName() + " not found");
+        } else {
+            responseRoomDto = modelMapper.map(room, RoomDto.class);
+        }
         return responseRoomDto;
     }
 
