@@ -54,27 +54,25 @@ public class HttpBackendClient {
         } catch (IOException e) {
             throw new HttpClientIOException("IOException to remote address " + url);
         }
-
         if (response.statusCode() == 404) throw new UserNotFoundException("User '" + userName + "' not found");
-
         return JsonMapper.fromJson(response.body(), UserDto.class);
     }
 
     public UserDto userUpdate(UserDto userDto) throws IOException, InterruptedException {
-        UserDto result;
-        String resultString;
         var request = HttpRequest.newBuilder(URI.create(userUpdateAddress))
                 .header(CONTENT_TYPE, APPLICATION_JSON)
                 .PUT(HttpRequest.BodyPublishers.ofString(JsonMapper.toJson(userDto)))
                 .build();
-        HttpResponse<String> response = null;
+        HttpResponse<String> response;
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
             throw new HttpClientIOException("IOException to remote address " + userUpdateAddress);
         }
-        resultString = response.body();
-        result = JsonMapper.fromJson(resultString, UserDto.class);
+
+
+        var result=  JsonMapper.fromJson(response.body(), UserDto.class);
+        if (result==null) return UserDto.EMPTY_ENTITY;
         return result;
     }
 
@@ -132,13 +130,10 @@ public class HttpBackendClient {
         if (response.statusCode() > 399) {
             throw new HttpClientIOException("IOException to remote address " + url);
         }
-
         return JsonMapper.fromJson(response.body(), RoomDto.class);
     }
 
     public RoomDto roomUpdateUsersList(RoomDto currentRoom) throws InterruptedException, HttpClientIOException {
-        RoomDto result;
-        String resultString;
         var request = HttpRequest.newBuilder(URI.create(roomUpdateUsersList))
                 .header(CONTENT_TYPE, APPLICATION_JSON)
                 .PUT(HttpRequest.BodyPublishers.ofString(JsonMapper.toJson(currentRoom)))
@@ -149,8 +144,6 @@ public class HttpBackendClient {
         } catch (IOException e) {
             throw new HttpClientIOException("IOException to remote address " + userUpdateAddress);
         }
-        resultString = response.body();
-        result = JsonMapper.fromJson(resultString, RoomDto.class);
-        return result;
+        return JsonMapper.fromJson(response.body(), RoomDto.class);
     }
 }

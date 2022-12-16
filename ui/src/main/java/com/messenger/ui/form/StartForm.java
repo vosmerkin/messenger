@@ -51,8 +51,8 @@ public class StartForm {
                         userLoginButton.setEnabled(false);
                         if (userLoggedInStatus) {
                             UserDto user = uiAction.userLogOffAction(currentUser);
-                            if (user != null) {
-                                currentUser = null;
+                            if (user != UserDto.EMPTY_ENTITY) {
+                                currentUser = UserDto.EMPTY_ENTITY;
                                 userLoginButton.setText("User Login");
                                 userNameTextField.setEnabled(true);
                                 userLoggedInStatus = false;
@@ -62,7 +62,7 @@ public class StartForm {
                         } else {
                             String userName = userNameTextField.getText();
                             currentUser = uiAction.userLogInAction(userName);
-                            if (currentUser != null) {
+                            if (currentUser != UserDto.EMPTY_ENTITY) {
                                 userLoginButton.setText("User Logoff");
                                 userNameTextField.setEnabled(false);
                                 userLoggedInStatus = true;

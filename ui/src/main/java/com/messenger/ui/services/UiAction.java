@@ -15,7 +15,7 @@ public class UiAction {
     private HttpBackendClient httpBackendClient = new HttpBackendClient();
 
     public UserDto userLogInAction(String userName) {
-        UserDto userDto = null;
+        UserDto userDto = UserDto.EMPTY_ENTITY;
         try {
             userDto = httpBackendClient.userRequest(userName);
             userDto.setActiveStatus(true);
@@ -62,7 +62,7 @@ public class UiAction {
     }
 
     private UserDto createUser(String userName) {
-        UserDto userDto = null;
+        UserDto userDto = UserDto.EMPTY_ENTITY;
         try {
             log.info("Creating a new user: {}", userName);
             userDto = httpBackendClient.userCreate(userName);
@@ -79,7 +79,7 @@ public class UiAction {
     }
 
     public RoomDto roomEnter(String roomName) {
-        RoomDto roomDto = null;
+        RoomDto roomDto = RoomDto.EMPTY_ENTITY;
         try {
             //get roomDto
             roomDto = httpBackendClient.roomRequest(roomName);
@@ -111,7 +111,7 @@ public class UiAction {
     }
 
     private RoomDto createRoom(String roomName) {
-        RoomDto roomDto = null;
+        RoomDto roomDto = RoomDto.EMPTY_ENTITY;
         try {
             //get roomDto
             roomDto = httpBackendClient.roomCreate(roomName);
