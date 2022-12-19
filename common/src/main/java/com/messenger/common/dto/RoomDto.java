@@ -1,10 +1,13 @@
 package com.messenger.common.dto;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
 public class RoomDto implements Serializable {
+
+    public static final RoomDto EMPTY_ENTITY = new RoomDto(-1, "DEFAULT ROOM", Collections.emptySet());
 
     private Integer id;
     private String roomName;
@@ -12,6 +15,12 @@ public class RoomDto implements Serializable {
     private Set<UserDto> roomUsers;
 
     public RoomDto() {
+    }
+
+    public RoomDto(Integer id, String roomName, Set<UserDto> roomUsers) {
+        this.id = id;
+        this.roomName = roomName;
+        this.roomUsers = roomUsers;
     }
 
     public Integer getId() {

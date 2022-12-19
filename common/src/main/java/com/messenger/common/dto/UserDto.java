@@ -1,12 +1,14 @@
 package com.messenger.common.dto;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
 public class UserDto implements Serializable {
 
+    public static final UserDto EMPTY_ENTITY = new UserDto(-1, "DEFAULT USER", false);
     private Integer id;
     private String userName;
     private Boolean activeStatus;
@@ -14,7 +16,9 @@ public class UserDto implements Serializable {
     public UserDto() {
     }
 
-    public void setActiveStatus(Boolean activeStatus) {
+    public UserDto(Integer id, String userName, Boolean activeStatus) {
+        this.id = id;
+        this.userName = userName;
         this.activeStatus = activeStatus;
     }
 
@@ -22,12 +26,24 @@ public class UserDto implements Serializable {
         return id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public String getUserName() {
         return userName;
     }
 
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public Boolean getActiveStatus() {
         return activeStatus;
+    }
+
+    public void setActiveStatus(Boolean activeStatus) {
+        this.activeStatus = activeStatus;
     }
 
 

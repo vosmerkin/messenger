@@ -1,7 +1,5 @@
 package com.messenger.ui.services;
 
-import com.messenger.common.dto.NewRoomDto;
-import com.messenger.common.dto.NewUserDto;
 import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
 import com.messenger.ui.exceptions.RoomNotFoundException;
@@ -17,7 +15,7 @@ public class UiAction {
     private HttpBackendClient httpBackendClient = new HttpBackendClient();
 
     public UserDto userLogInAction(String userName) {
-        UserDto userDto = null;
+        UserDto userDto = UserDto.EMPTY_ENTITY;
         try {
             userDto = httpBackendClient.userRequest(userName);
             userDto.setActiveStatus(true);
@@ -64,7 +62,7 @@ public class UiAction {
     }
 
     private UserDto createUser(String userName) {
-        UserDto userDto = null;
+        UserDto userDto = UserDto.EMPTY_ENTITY;
         try {
             log.info("Creating a new user: {}", userName);
             userDto = httpBackendClient.userCreate(userName);
@@ -81,7 +79,7 @@ public class UiAction {
     }
 
     public RoomDto roomEnter(String roomName) {
-        RoomDto roomDto = null;
+        RoomDto roomDto = RoomDto.EMPTY_ENTITY;
         try {
             //get roomDto
             roomDto = httpBackendClient.roomRequest(roomName);
@@ -113,11 +111,10 @@ public class UiAction {
     }
 
     private RoomDto createRoom(String roomName) {
-        NewRoomDto newRoomDto = new NewRoomDto(roomName);
-        RoomDto roomDto = null;
+        RoomDto roomDto = RoomDto.EMPTY_ENTITY;
         try {
             //get roomDto
-            roomDto = httpBackendClient.roomCreate(newRoomDto);
+            roomDto = httpBackendClient.roomCreate(roomName);
         } catch (IOException ex) {
             log.debug("IOException to remote address {}", ex);
             JOptionPane.showMessageDialog(null,
@@ -128,5 +125,20 @@ public class UiAction {
             log.debug("InterruptedException {}", ex);
         }
         return roomDto;
+    }
+
+    public RoomDto leaveRoom(RoomDto currentRoom) {
+        try {
+            currentRoom = httpBackendClient.roomUpdateUsersList(currentRoom);
+        } catch (IOException ex) {
+            log.debug(String.valueOf(ex));
+            JOptionPane.showMessageDialog(null,
+                    "Connection problem. Try again later ",
+                    "HttpClient Error",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (InterruptedException ex) {
+            log.debug(String.valueOf(ex));
+        }
+        return currentRoom;
     }
 }
