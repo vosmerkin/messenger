@@ -30,7 +30,7 @@ public class RoomController {
         log.info("/getRoom?name={}", name);
         RoomEntity room = roomService.getByRoomName(name);
         RoomDto responseRoomDto;
-        if (room == null) {
+        if (room == RoomEntity.EMPTY_ENTITY) {
             log.debug("Room at /getRoom?name={} not found, throwing exception", name);
             throw new RoomNotFoundException("Room " + name + " not found");
         } else {

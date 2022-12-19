@@ -19,7 +19,9 @@ public class UserService {
     }
 
     public UserEntity getByUserName(String userName) {
-        return userRepository.findByUserName(userName);
+        UserEntity result = userRepository.findByUserName(userName);
+        if (result == null) return UserEntity.EMPTY_ENTITY;
+        return result;
     }
 
     public Boolean getUserStatus(Integer id) {

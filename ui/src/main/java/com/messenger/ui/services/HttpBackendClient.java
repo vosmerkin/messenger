@@ -69,11 +69,7 @@ public class HttpBackendClient {
         } catch (IOException e) {
             throw new HttpClientIOException("IOException to remote address " + userUpdateAddress);
         }
-
-
-        var result=  JsonMapper.fromJson(response.body(), UserDto.class);
-        if (result==null) return UserDto.EMPTY_ENTITY;
-        return result;
+        return JsonMapper.fromJson(response.body(), UserDto.class);
     }
 
     public UserDto userCreate(String userName) throws InterruptedException, IOException {

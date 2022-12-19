@@ -105,8 +105,8 @@ public class StartForm {
                             if (currentRoom.getRoomUsers().contains(currentUser))
                                 currentRoom.getRoomUsers().remove(currentUser);
                             RoomDto room = uiAction.leaveRoom(currentRoom);
-                            if (room != null) {
-                                currentRoom = null;
+                            if (room != RoomDto.EMPTY_ENTITY) {
+                                currentRoom = RoomDto.EMPTY_ENTITY;
                                 roomCreateConnectButton.setText("Enter Room");
                                 roomNameTextField.setEnabled(true);
                                 roomConnectedStatus = false;
@@ -116,7 +116,7 @@ public class StartForm {
                         } else {
                             String roomName = roomNameTextField.getText();
                             currentRoom = uiAction.roomEnter(roomName);
-                            if (currentRoom != null) {
+                            if (currentRoom != RoomDto.EMPTY_ENTITY) {
                                 roomCreateConnectButton.setText("Leave Room");
                                 roomNameTextField.setEnabled(false);
                                 roomConnectedStatus = true;

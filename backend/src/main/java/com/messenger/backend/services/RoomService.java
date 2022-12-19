@@ -22,9 +22,11 @@ public class RoomService {
         RoomEntity newRoom = new RoomEntity(null, roomName, Collections.emptySet());
         return roomRepository.save(newRoom);
     }
-    
+
     public RoomEntity getByRoomName(String roomName) {
-        return roomRepository.findByRoomName(roomName);
+        RoomEntity result = roomRepository.findByRoomName(roomName);
+        if (result == null) return RoomEntity.EMPTY_ENTITY;
+        return result;
     }
 
 

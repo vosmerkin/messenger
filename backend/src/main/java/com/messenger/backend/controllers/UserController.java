@@ -27,7 +27,7 @@ public class UserController {
         log.info("/getUser?name={}", name);
         UserEntity user = userService.getByUserName(name);
         UserDto responseUserDto;
-        if (user == null) {
+        if (user == UserEntity.EMPTY_ENTITY) {
             throw new UserNotFoundException("User " + name + " not found");
         } else {
             responseUserDto = modelMapper.map(user, UserDto.class);
