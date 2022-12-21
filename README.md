@@ -42,7 +42,7 @@ Description=Simple messenger backend service
 
 [Service]
 WorkingDirectory=/opt/messenger
-ExecStart=/bin/java -Xms128m -Xmx256m -jar messenger_backend.jar
+ExecStart=/bin/java -Xms128m -Xmx256m -jar -Dspring.profiles.active=dev backend-0.1.1-SNAPSHOT.jar
 User=messenger_user
 Type=simple
 Restart=on-failure

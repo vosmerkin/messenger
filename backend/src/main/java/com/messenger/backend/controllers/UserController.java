@@ -17,10 +17,14 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
+    private final UserService userService;
+    private final ModelMapper modelMapper;
+
     @Autowired
-    private UserService userService;
-    @Autowired
-    private ModelMapper modelMapper = new ModelMapper();
+    public UserController(UserService userService, ModelMapper modelMapper) {
+        this.userService = userService;
+        this.modelMapper = modelMapper;
+    }
 
     @GetMapping("/getUser")    //request userinfo for logged in user
     public UserDto getUser(@RequestParam(value = "name") String name) {
@@ -64,7 +68,6 @@ public class UserController {
         }
         return responseUserDto;
     }
-
 
 
 }
