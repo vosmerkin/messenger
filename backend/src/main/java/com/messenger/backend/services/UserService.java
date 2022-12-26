@@ -24,6 +24,11 @@ public class UserService {
         return result;
     }
 
+    public UserEntity getByUserId(Integer id) {
+        UserEntity result = userRepository.findAllById(id);
+        if (result == null) return UserEntity.EMPTY_ENTITY;
+        return result;
+    }
     public Boolean getUserStatus(Integer id) {
         UserEntity user = userRepository.findAllById(id);
         boolean status = user.getActiveStatus();

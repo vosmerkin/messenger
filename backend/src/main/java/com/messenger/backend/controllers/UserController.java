@@ -44,7 +44,14 @@ public class UserController {
     @GetMapping("/getUserStatus")    //request user Active status
     public Boolean getUserStatus(@RequestParam(value = "id") Integer id) {
         log.info("/getUserStatus?id={}", id);
-        return userService.getUserStatus(id);
+        Boolean result = false;
+        UserEntity user = userService.getByUserId(id);
+        if (user == UserEntity.EMPTY_ENTITY) {
+            throw new UserNotFoundException("User with id=" + id + " not found");
+        } else {
+            result = user.getActiveStatus();
+        }
+        return result;
     }
 
     @GetMapping(value = "/createUser", consumes = MediaType.APPLICATION_JSON_VALUE)

@@ -20,8 +20,7 @@ import java.util.Date;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = UserController.class)
 @Import(BackEndConfig.class)
@@ -31,6 +30,7 @@ class UserControllerTest {
     public static final String TEST_USER = "test";
     public static final Instant POINT_IN_TIME = OffsetDateTime.parse("2010-12-31T23:59:59Z").toInstant();
     public static final String USER_NAME = "TestUser";
+    private static final Integer TEST_ID = 10;
 
     @Autowired
     private MockMvc mockMvc;
@@ -55,7 +55,7 @@ class UserControllerTest {
     void getExistedUser() throws Exception {
         var testUser = new UserEntity(10, USER_NAME, Date.from(POINT_IN_TIME), true, Collections.emptySet());
 
-        when(userService.getByUserName(TEST_USER)).thenReturn(testUser);
+        when(userService.getByUserName(TEST_USER)).thenReturn(testUser);      //setting behaviour of mocked UserService object
         mockMvc.perform(get("/getUser")
                         .param("name", TEST_USER))
                 .andExpect(status().isOk())
@@ -63,11 +63,49 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.id").value(10))
                 .andExpect(jsonPath("$.activeStatus").value(true));
 
-        verify(userService).getByUserName(TEST_USER);
+        verify(userService).getByUserName(TEST_USER);    //verifying that business logic was called
     }
 
     @Test
-    void getUserStatus() {
+    void getExistingActiveUserStatus() throws Exception {
+        var testUser = new UserEntity(10, USER_NAME, Date.from(POINT_IN_TIME), true, Collections.emptySet());
+
+        when(userService.getByUserId(TEST_ID)).thenReturn(testUser);
+
+        mockMvc.perform(get("/getUserStatus")
+                        .param("id", String.valueOf(TEST_ID)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(content().string("true"));
+
+        verify(userService).getByUserId(TEST_ID);
+    }
+
+    @Test
+    void getExistingNotActiveUserStatus() throws Exception {
+        var testUser = new UserEntity(10, USER_NAME, Date.from(POINT_IN_TIME), false, Collections.emptySet());
+
+        when(userService.getByUserId(TEST_ID)).thenReturn(testUser);
+
+        mockMvc.perform(get("/getUserStatus")
+                        .param("id", String.valueOf(TEST_ID)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(content().string("false"));
+        ;
+
+        verify(userService).getByUserId(TEST_ID);
+    }
+
+    @Test
+    void getNotExistingUserStatus() throws Exception {
+        when(userService.getByUserId(TEST_ID)).thenReturn(UserEntity.EMPTY_ENTITY);
+
+        mockMvc.perform(get("/getUserStatus")
+                        .param("id", String.valueOf(TEST_ID)))
+                .andExpect(status().isNotFound());
+
+        verify(userService).getByUserId(TEST_ID);
     }
 
     @Test
