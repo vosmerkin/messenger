@@ -25,13 +25,13 @@ public class UserService {
     }
 
     public UserEntity getByUserId(Integer id) {
-        UserEntity result = userRepository.findAllById(id);
+        UserEntity result = userRepository.getReferenceById(id);
         if (result == null) return UserEntity.EMPTY_ENTITY;
         return result;
     }
 
     public Boolean getUserStatus(Integer id) {
-        UserEntity user = userRepository.findAllById(id);
+        UserEntity user = userRepository.getReferenceById(id);
         boolean status = user.getActiveStatus();
         return status;
     }
@@ -52,6 +52,7 @@ public class UserService {
         UserEntity result = UserEntity.EMPTY_ENTITY;
         if (userRepository.existsById(id)) {
             UserEntity existingUser = userRepository.getReferenceById(id);
+            existingUser.setUserName(userEntity.getUserName());
             existingUser.setActiveStatus(userEntity.getActiveStatus());
             result = userRepository.save(existingUser);
         }
