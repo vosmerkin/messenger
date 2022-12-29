@@ -2,6 +2,7 @@ package com.messenger.backend.controllers;
 
 import com.messenger.backend.entity.RoomEntity;
 import com.messenger.backend.entity.UserEntity;
+import com.messenger.backend.exception.UserCreateFailed;
 import com.messenger.backend.exception.UserNotFoundException;
 import com.messenger.backend.services.UserService;
 import com.messenger.common.dto.RoomDto;
@@ -10,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,11 +56,19 @@ public class UserController {
         return result;
     }
 
-    @GetMapping(value = "/createUser", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/createUser")
+    @ResponseStatus(HttpStatus.CREATED)
     public UserDto createUser(@RequestParam(value = "name") String userName) {
         log.info("/createUser?name={}", userName);
+        if (userName.isEmpty())
+            throw new UserCreateFailed("User name cannot be empty");
         UserEntity user = userService.createUser(userName);
-        UserDto responseUserDto = modelMapper.map(user, UserDto.class);
+        UserDto responseUserDto;
+        if (user == UserEntity.EMPTY_ENTITY) {
+            throw new UserCreateFailed("User " + userName + " already exists");
+        } else {
+            responseUserDto = modelMapper.map(user, UserDto.class);
+        }
         return responseUserDto;
     }
 

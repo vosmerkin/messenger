@@ -29,6 +29,7 @@ public class UserService {
         if (result == null) return UserEntity.EMPTY_ENTITY;
         return result;
     }
+
     public Boolean getUserStatus(Integer id) {
         UserEntity user = userRepository.findAllById(id);
         boolean status = user.getActiveStatus();
@@ -36,8 +37,14 @@ public class UserService {
     }
 
     public UserEntity createUser(String userName) {
-        UserEntity newUser = new UserEntity(null, userName, new Date(), true, Collections.emptySet());
-        return userRepository.save(newUser);
+        UserEntity newUser = UserEntity.EMPTY_ENTITY;
+        UserEntity existingUser = UserEntity.EMPTY_ENTITY;
+        if (!userName.isEmpty())
+            existingUser = userRepository.findByUserName(userName);
+        if (existingUser == null)
+            newUser = userRepository.save(new UserEntity(null, userName, new Date(), true, Collections.emptySet()));
+
+        return newUser;
     }
 
     public UserEntity updateUserStatus(UserEntity userEntity) {

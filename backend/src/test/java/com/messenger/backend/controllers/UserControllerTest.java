@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.messenger.backend.config.BackEndConfig;
 import com.messenger.backend.entity.UserEntity;
 import com.messenger.backend.services.UserService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +93,6 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(content().string("false"));
-        ;
 
         verify(userService).getByUserId(TEST_ID);
     }
@@ -109,8 +109,40 @@ class UserControllerTest {
     }
 
     @Test
-    void createUser() {
+    void createUser() throws Exception{
+        UserEntity newUser = new UserEntity(1,TEST_USER,Date.from(POINT_IN_TIME),true,Collections.emptySet());
+        when(userService.createUser(TEST_USER)).thenReturn(newUser);
+
+        mockMvc.perform(get("/createUser")
+                        .param("name", String.valueOf(TEST_USER)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.userName").value(TEST_USER))
+                .andExpect(jsonPath("$.id", Matchers.greaterThan(0)))
+                .andExpect(jsonPath("$.activeStatus").value(true));
+        verify(userService).createUser(TEST_USER);
     }
+
+    @Test
+    void createUserEmptyName() throws Exception{
+        when(userService.createUser("")).thenReturn(UserEntity.EMPTY_ENTITY);
+
+        mockMvc.perform(get("/createUser")
+                        .param("name", String.valueOf("")))
+                .andExpect(status().isBadRequest());
+//        verify(userService).createUser("");
+    }
+
+    @Test
+    void createUserExistingUserName() throws Exception{
+        UserEntity newUser = new UserEntity(1,TEST_USER,Date.from(POINT_IN_TIME),true,Collections.emptySet());
+        when(userService.createUser(TEST_USER)).thenReturn(UserEntity.EMPTY_ENTITY);
+
+        mockMvc.perform(get("/createUser")
+                        .param("name", String.valueOf(TEST_USER)))
+                .andExpect(status().isBadRequest());
+        verify(userService).createUser(TEST_USER);
+    }
+
 
 //    @Test
 //    void updateUser() throws Exception {
