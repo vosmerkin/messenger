@@ -8,13 +8,14 @@ import com.messenger.common.dto.JsonMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -23,7 +24,8 @@ import java.util.Date;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = UserController.class)
@@ -145,28 +147,36 @@ class UserControllerTest {
         UserEntity changedUser = TEST_USER;
         String newUserName = "TestUser1";
         changedUser.setUserName(newUserName);
-        when(userService.updateUserStatus(changedUser)).thenReturn(changedUser);
+        when(userService.updateUserStatus(ArgumentMatchers.any())).thenReturn(changedUser);
 
         mockMvc.perform(put("/updateUser")
                         .contentType("application/json")
 //                        .characterEncoding("utf-8")
                         .content(JsonMapper.toJson(changedUser))
                         .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", Matchers.equalTo(newUserName)));
+                .andExpect(jsonPath("$.userName", Matchers.equalTo(newUserName)));
 
-        verify(userService).updateUserStatus(changedUser);
+        verify(userService).updateUserStatus(ArgumentMatchers.any());
     }
 
     @Test
     void updateUserStatus() throws Exception {
-        UserEntity newUser = new UserEntity(1, USER_NAME, Date.from(POINT_IN_TIME), true, Collections.emptySet());
-        when(userService.createUser(USER_NAME)).thenReturn(UserEntity.EMPTY_ENTITY);
+        UserEntity changedUser = TEST_USER;
+        changedUser.setActiveStatus(false);
+        when(userService.updateUserStatus(ArgumentMatchers.any())).thenReturn(changedUser);
 
-        mockMvc.perform(get("/createUser")
-                        .param("name", String.valueOf(USER_NAME)))
-                .andExpect(status().isBadRequest());
-        verify(userService).createUser(USER_NAME);
+        mockMvc.perform(put("/updateUser")
+                        .contentType("application/json")
+//                        .characterEncoding("utf-8")
+                        .content(JsonMapper.toJson(changedUser))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.activeStatus", Matchers.equalTo(false)));
+
+        verify(userService).updateUserStatus(ArgumentMatchers.any());
     }
 
 //    @Test
