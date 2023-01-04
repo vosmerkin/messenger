@@ -147,7 +147,7 @@ class UserControllerTest {
         UserEntity changedUser = TEST_USER;
         String newUserName = "TestUser1";
         changedUser.setUserName(newUserName);
-        when(userService.updateUserStatus(ArgumentMatchers.any())).thenReturn(changedUser);
+        when(userService.updateUser(ArgumentMatchers.any())).thenReturn(changedUser);
 
         mockMvc.perform(put("/updateUser")
                         .contentType("application/json")
@@ -158,14 +158,14 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userName", Matchers.equalTo(newUserName)));
 
-        verify(userService).updateUserStatus(ArgumentMatchers.any());
+        verify(userService).updateUser(ArgumentMatchers.any());
     }
 
     @Test
     void updateUserStatus() throws Exception {
         UserEntity changedUser = TEST_USER;
         changedUser.setActiveStatus(false);
-        when(userService.updateUserStatus(ArgumentMatchers.any())).thenReturn(changedUser);
+        when(userService.updateUser(ArgumentMatchers.any())).thenReturn(changedUser);
 
         mockMvc.perform(put("/updateUser")
                         .contentType("application/json")
@@ -176,7 +176,7 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.activeStatus", Matchers.equalTo(false)));
 
-        verify(userService).updateUserStatus(ArgumentMatchers.any());
+        verify(userService).updateUser(ArgumentMatchers.any());
     }
 
 //    @Test
