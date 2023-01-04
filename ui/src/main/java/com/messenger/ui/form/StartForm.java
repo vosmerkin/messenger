@@ -17,13 +17,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class StartForm {
-    private static final Logger log = LoggerFactory.getLogger(StartForm.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StartForm.class);
 
-    private DefaultListModel<UserDto> contactListModel = new DefaultListModel<UserDto>();
+    private DefaultListModel<UserDto> contactListModel = new DefaultListModel<>();
 
-    private DefaultListModel<UserDto> roomUserListModel = new DefaultListModel<UserDto>();
+    private DefaultListModel<UserDto> roomUserListModel = new DefaultListModel<>();
 
-    private HttpBackendClient backendClient;
     private UiAction uiAction = new UiAction();
     private UserDto currentUser;
     private RoomDto currentRoom;
@@ -41,7 +40,7 @@ public class StartForm {
     private boolean roomConnectedStatus;
 
     public StartForm() {
-        sendButton.addActionListener(e -> System.out.println("Going to send a message"));
+        sendButton.addActionListener(e -> LOG.error("Going to send a message: [{}]", messageTextField.getText()));
         userLoginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

@@ -24,15 +24,27 @@ public class UserService {
         return result;
     }
 
+    public UserEntity getByUserId(Integer id) {
+        UserEntity result = userRepository.getReferenceById(id);
+        if (result == null) return UserEntity.EMPTY_ENTITY;
+        return result;
+    }
+
     public Boolean getUserStatus(Integer id) {
-        UserEntity user = userRepository.findAllById(id);
+        UserEntity user = userRepository.getReferenceById(id);
         boolean status = user.getActiveStatus();
         return status;
     }
 
     public UserEntity createUser(String userName) {
-        UserEntity newUser = new UserEntity(null, userName, new Date(), true, Collections.emptySet());
-        return userRepository.save(newUser);
+        UserEntity newUser = UserEntity.EMPTY_ENTITY;
+        UserEntity existingUser = UserEntity.EMPTY_ENTITY;
+        if (!userName.isEmpty())
+            existingUser = userRepository.findByUserName(userName);
+        if (existingUser == null)
+            newUser = userRepository.save(new UserEntity(null, userName, new Date(), true, Collections.emptySet()));
+
+        return newUser;
     }
 
     public UserEntity updateUserStatus(UserEntity userEntity) {
@@ -40,6 +52,7 @@ public class UserService {
         UserEntity result = UserEntity.EMPTY_ENTITY;
         if (userRepository.existsById(id)) {
             UserEntity existingUser = userRepository.getReferenceById(id);
+            existingUser.setUserName(userEntity.getUserName());
             existingUser.setActiveStatus(userEntity.getActiveStatus());
             result = userRepository.save(existingUser);
         }
