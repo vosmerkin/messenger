@@ -116,4 +116,19 @@ class RoomControllerTest {
 
         verify(roomService).updateRoom(ArgumentMatchers.any());
     }
+
+    @Test
+    void updateRoomNotExisting() throws Exception {
+        RoomEntity testRoom = new RoomEntity(TEST_ID, ROOM_NAME, Collections.emptySet());
+        when(roomService.updateRoom(ArgumentMatchers.any())).thenReturn(RoomEntity.EMPTY_ENTITY);
+
+        mockMvc.perform(put("/updateRoom")
+                        .contentType("application/json")
+                        .content(JsonMapper.toJson(testRoom))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isNotFound());
+
+        verify(roomService).updateRoom(ArgumentMatchers.any());
+    }
 }

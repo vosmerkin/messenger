@@ -183,7 +183,7 @@ class UserControllerTest {
     @Test
     void updateUserNotExisting() throws Exception {
         UserEntity testUser = new UserEntity(TEST_ID, USER_NAME, Date.from(POINT_IN_TIME), false, Collections.emptySet());
-        when(userService.updateUser(ArgumentMatchers.any())).thenReturn(testUser);
+        when(userService.updateUser(ArgumentMatchers.any())).thenReturn(UserEntity.EMPTY_ENTITY);
 
         mockMvc.perform(put("/updateUser")
                         .contentType("application/json")
@@ -191,8 +191,7 @@ class UserControllerTest {
                         .content(JsonMapper.toJson(testUser))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.activeStatus", Matchers.equalTo(false)));
+                .andExpect(status().isNotFound());
 
         verify(userService).updateUser(ArgumentMatchers.any());
     }
