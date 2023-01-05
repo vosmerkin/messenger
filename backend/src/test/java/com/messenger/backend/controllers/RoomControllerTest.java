@@ -36,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class RoomControllerTest {
     public static final String ROOM_NAME = "TestRoom";
     private static final Integer TEST_ID = 10;
-    public static final RoomEntity TEST_ROOM = new RoomEntity(TEST_ID, ROOM_NAME, Collections.emptySet());
     @Autowired
     private MockMvc mockMvc;
     @MockBean
@@ -58,7 +57,8 @@ class RoomControllerTest {
 
     @Test
     void getExistedRoom() throws Exception {
-        when(roomService.getByRoomName(ROOM_NAME)).thenReturn(TEST_ROOM);      //setting behaviour of mocked RoomService object
+        RoomEntity testRoom = new RoomEntity(TEST_ID, ROOM_NAME, Collections.emptySet());
+        when(roomService.getByRoomName(ROOM_NAME)).thenReturn(testRoom);      //setting behaviour of mocked RoomService object
         mockMvc.perform(get("/getRoom")
                         .param("name", ROOM_NAME))
                 .andExpect(status().isOk())
@@ -70,7 +70,8 @@ class RoomControllerTest {
 
     @Test
     void createRoom() throws Exception {
-        when(roomService.createRoom(ROOM_NAME)).thenReturn(TEST_ROOM);
+        RoomEntity testRoom = new RoomEntity(TEST_ID, ROOM_NAME, Collections.emptySet());
+        when(roomService.createRoom(ROOM_NAME)).thenReturn(testRoom);
 
         mockMvc.perform(get("/createRoom")
                         .param("name", String.valueOf(ROOM_NAME)))
@@ -102,13 +103,12 @@ class RoomControllerTest {
 
     @Test
     void updateRoomName() throws Exception {
-        RoomEntity changedRoom = TEST_ROOM;
-        when(roomService.updateRoom(ArgumentMatchers.any())).thenReturn(changedRoom);
+        RoomEntity testRoom = new RoomEntity(TEST_ID, ROOM_NAME, Collections.emptySet());
+        when(roomService.updateRoom(ArgumentMatchers.any())).thenReturn(testRoom);
 
         mockMvc.perform(put("/updateRoom")
                         .contentType("application/json")
-//                        .characterEncoding("utf-8")
-                        .content(JsonMapper.toJson(changedRoom))
+                        .content(JsonMapper.toJson(testRoom))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
