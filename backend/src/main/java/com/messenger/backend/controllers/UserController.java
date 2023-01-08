@@ -1,11 +1,9 @@
 package com.messenger.backend.controllers;
 
-import com.messenger.backend.entity.RoomEntity;
 import com.messenger.backend.entity.UserEntity;
 import com.messenger.backend.exception.UserCreateFailed;
 import com.messenger.backend.exception.UserNotFoundException;
 import com.messenger.backend.services.UserService;
-import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -34,6 +32,7 @@ public class UserController {
         UserEntity user = userService.getByUserName(name);
         UserDto responseUserDto;
         if (user == UserEntity.EMPTY_ENTITY) {
+            log.debug("User at /getUser?name={} not found, throwing exception", name);
             throw new UserNotFoundException("User " + name + " not found");
         } else {
             responseUserDto = modelMapper.map(user, UserDto.class);
@@ -76,7 +75,7 @@ public class UserController {
     public UserDto updateUser(@RequestBody UserDto userDto) {
         log.info("/updateUser_{}", userDto);
         UserEntity requestUser = modelMapper.map(userDto, UserEntity.class);
-        UserEntity user = userService.updateUserStatus(requestUser);
+        UserEntity user = userService.updateUser(requestUser);
         UserDto responseUserDto;
         if (user == UserEntity.EMPTY_ENTITY) {
             throw new UserNotFoundException("User " + userDto.getUserName() + " not found");

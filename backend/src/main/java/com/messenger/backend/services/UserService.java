@@ -1,6 +1,5 @@
 package com.messenger.backend.services;
 
-import com.messenger.backend.entity.RoomEntity;
 import com.messenger.backend.entity.UserEntity;
 import com.messenger.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,17 +42,17 @@ public class UserService {
             existingUser = userRepository.findByUserName(userName);
         if (existingUser == null)
             newUser = userRepository.save(new UserEntity(null, userName, new Date(), true, Collections.emptySet()));
-
         return newUser;
     }
 
-    public UserEntity updateUserStatus(UserEntity userEntity) {
+    public UserEntity updateUser(UserEntity userEntity) {
         Integer id = userEntity.getId();
         UserEntity result = UserEntity.EMPTY_ENTITY;
         if (userRepository.existsById(id)) {
             UserEntity existingUser = userRepository.getReferenceById(id);
             existingUser.setUserName(userEntity.getUserName());
             existingUser.setActiveStatus(userEntity.getActiveStatus());
+            existingUser.setContactList(userEntity.getContactList());
             result = userRepository.save(existingUser);
         }
         return result;

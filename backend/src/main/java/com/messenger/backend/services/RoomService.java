@@ -19,8 +19,13 @@ public class RoomService {
     }
 
     public RoomEntity createRoom(String roomName) {
-        RoomEntity newRoom = new RoomEntity(null, roomName, Collections.emptySet());
-        return roomRepository.save(newRoom);
+        RoomEntity newRoom = RoomEntity.EMPTY_ENTITY;
+        RoomEntity existingUser = RoomEntity.EMPTY_ENTITY;
+        if (!roomName.isEmpty())
+            existingUser = roomRepository.findByRoomName(roomName);
+        if (existingUser == null)
+            newRoom = roomRepository.save(new RoomEntity(null, roomName, Collections.emptySet()));
+        return newRoom;
     }
 
     public RoomEntity getByRoomName(String roomName) {
@@ -30,11 +35,13 @@ public class RoomService {
     }
 
 
-    public RoomEntity updateRoomUsers(RoomEntity roomEntity) {
+
+    public RoomEntity updateRoom(RoomEntity roomEntity) {
         Integer id = roomEntity.getId();
         RoomEntity result = RoomEntity.EMPTY_ENTITY;
         if (roomRepository.existsById(id)) {
             RoomEntity existingRoom = roomRepository.getReferenceById(id);
+            existingRoom.setRoomName(roomEntity.getRoomName());
             existingRoom.setRoomUsers(roomEntity.getRoomUsers());
             result = roomRepository.save(existingRoom);
         }
