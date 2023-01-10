@@ -29,16 +29,16 @@ public class UserService {
         return result;
     }
 
-    public Boolean getUserStatus(Integer id) {
-        UserEntity user = userRepository.getReferenceById(id);
-        boolean status = user.getActiveStatus();
-        return status;
-    }
+//    public Boolean getUserStatus(Integer id) {
+//        UserEntity user = userRepository.getReferenceById(id);
+//        boolean status = user.getActiveStatus();
+//        return status;
+//    }
 
     public UserEntity createUser(String userName) {
         UserEntity newUser = UserEntity.EMPTY_ENTITY;
         UserEntity existingUser = UserEntity.EMPTY_ENTITY;
-        if (!userName.isEmpty())
+        if (userName != null && !userName.isEmpty())
             existingUser = userRepository.findByUserName(userName);
         if (existingUser == null)
             newUser = userRepository.save(new UserEntity(null, userName, new Date(), true, Collections.emptySet()));
@@ -46,14 +46,16 @@ public class UserService {
     }
 
     public UserEntity updateUser(UserEntity userEntity) {
-        Integer id = userEntity.getId();
         UserEntity result = UserEntity.EMPTY_ENTITY;
-        if (userRepository.existsById(id)) {
-            UserEntity existingUser = userRepository.getReferenceById(id);
-            existingUser.setUserName(userEntity.getUserName());
-            existingUser.setActiveStatus(userEntity.getActiveStatus());
-            existingUser.setContactList(userEntity.getContactList());
-            result = userRepository.save(existingUser);
+        if (userEntity != null) {
+            Integer id = userEntity.getId();
+            if (userRepository.existsById(id)) {
+                UserEntity existingUser = userRepository.getReferenceById(id);
+                existingUser.setUserName(userEntity.getUserName());
+                existingUser.setActiveStatus(userEntity.getActiveStatus());
+                existingUser.setContactList(userEntity.getContactList());
+                result = userRepository.save(existingUser);
+            }
         }
         return result;
     }
