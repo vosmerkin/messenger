@@ -1,6 +1,5 @@
 package com.messenger.backend.services;
 
-import com.messenger.backend.config.BackEndConfig;
 import com.messenger.backend.entity.UserEntity;
 import com.messenger.backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +10,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.annotation.Import;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -75,7 +73,7 @@ class UserServiceTest {
         verify(repository).findByUserName(emptyArgument);
     }
 
-    @DisplayName("Testing UserService/getByUserName in case of not existing userName argument")
+    @DisplayName("Testing UserService/getByUserName in case of not existing userName")
     @Test
     void getByUserNameNotExistingUser() {
         when(repository.findByUserName(USER_NAME)).thenReturn(null);
@@ -145,7 +143,8 @@ class UserServiceTest {
     @DisplayName("Testing UserService/createUser in case of empty userName argument")
     @Test
     void createUserEmptyStringArgument() {
-        final var result = service.createUser("");
+        String emptyArgument = "";
+        final var result = service.createUser(emptyArgument);
 
         assertThat(result).isEqualTo(UserEntity.EMPTY_ENTITY);
     }
