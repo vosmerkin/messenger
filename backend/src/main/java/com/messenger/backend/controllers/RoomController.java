@@ -61,7 +61,7 @@ public class RoomController {
         return responseRoomDto;
     }
 
-    @PutMapping(value = "/updateRoom", consumes = MediaType.APPLICATION_JSON_VALUE) //update room rooms list
+    @PutMapping(value = "/updateRoomUsers", consumes = MediaType.APPLICATION_JSON_VALUE) //update room rooms list
     public RoomDto updateRoom(@RequestBody RoomDto roomDto) {
         log.info("/updateRoom_{}", roomDto);
         RoomEntity requestRoom = modelMapper.map(roomDto, RoomEntity.class);

@@ -78,7 +78,7 @@ public class UiAction {
         return userDto;
     }
 
-    public RoomDto roomEnter(String roomName) {
+    public RoomDto roomEnter(String roomName,UserDto user) {
         RoomDto roomDto = RoomDto.EMPTY_ENTITY;
         try {
             //get roomDto
@@ -105,8 +105,11 @@ public class UiAction {
                         JOptionPane.INFORMATION_MESSAGE);
             }
         }
-
         //if present - get room users and history
+        if (roomDto!=RoomDto.EMPTY_ENTITY) {
+            roomDto.addRoomUser(user);
+            updateRoom(roomDto);
+        }
         return roomDto;
     }
 
@@ -127,7 +130,7 @@ public class UiAction {
         return roomDto;
     }
 
-    public RoomDto leaveRoom(RoomDto currentRoom) {
+    public RoomDto updateRoom(RoomDto currentRoom) {
         try {
             currentRoom = httpBackendClient.roomUpdateUsersList(currentRoom);
         } catch (IOException ex) {

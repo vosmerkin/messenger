@@ -4,7 +4,6 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
-import com.messenger.ui.services.HttpBackendClient;
 import com.messenger.ui.services.UiAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +20,7 @@ public class StartForm {
 
     private DefaultListModel<UserDto> contactListModel = new DefaultListModel<>();
 
-    private DefaultListModel<UserDto> roomUserListModel = new DefaultListModel<>();
+    private DefaultListModel<String> roomUserListModel = new DefaultListModel<>();
 
     private UiAction uiAction = new UiAction();
     private UserDto currentUser;
@@ -103,7 +102,7 @@ public class StartForm {
                         if (roomConnectedStatus) {
                             if (currentRoom.getRoomUsers().contains(currentUser))
                                 currentRoom.getRoomUsers().remove(currentUser);
-                            RoomDto room = uiAction.leaveRoom(currentRoom);
+                            RoomDto room = uiAction.updateRoom(currentRoom);
                             if (room != RoomDto.EMPTY_ENTITY) {
                                 currentRoom = RoomDto.EMPTY_ENTITY;
                                 roomCreateConnectButton.setText("Enter Room");
@@ -114,13 +113,13 @@ public class StartForm {
                             }
                         } else {
                             String roomName = roomNameTextField.getText();
-                            currentRoom = uiAction.roomEnter(roomName);
+                            currentRoom = uiAction.roomEnter(roomName,currentUser);
                             if (currentRoom != RoomDto.EMPTY_ENTITY) {
                                 roomCreateConnectButton.setText("Leave Room");
                                 roomNameTextField.setEnabled(false);
                                 roomConnectedStatus = true;
-//                                roomUserListModel.addAll(currentRoom.getRoomUsers());
-//                                roomUserList.setModel(roomUserListModel);
+                                roomUserListModel.addAll(currentRoom.getRoomUserNames());
+                                roomUserList.setModel(roomUserListModel);
 //                                fillRoomUserList
 //                                fillMessagesFromHistory
                             }
@@ -229,5 +228,6 @@ public class StartForm {
         // TODO: place custom component creation code here
         changeUserLoginButtonEnabledState();
         changeRoomCreateConnectButtonEnabledState();
+
     }
 }

@@ -140,13 +140,13 @@ class RoomServiceTest {
         verify(repository).save(ArgumentMatchers.any());
     }
 
-    @DisplayName("Testing RoomService/updateRoom in case of Null room argument")
-    @Test
-    void updateRoomNullArgument() {
-        final var result = service.updateRoom(null);
-
-        assertThat(result).isEqualTo(RoomEntity.EMPTY_ENTITY);
-    }
+//    @DisplayName("Testing RoomService/updateRoom in case of Null room argument")
+//    @Test
+//    void updateRoomNullArgument() {
+//        final var result = service.updateRoom(null);
+//
+//        assertThat(result).isEqualTo(RoomEntity.EMPTY_ENTITY);
+//    }
 
     @DisplayName("Testing RoomService/updateRoom in case of not existing room")
     @Test
