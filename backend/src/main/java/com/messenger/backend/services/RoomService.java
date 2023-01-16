@@ -21,7 +21,7 @@ public class RoomService {
     public RoomEntity createRoom(String roomName) {
         RoomEntity newRoom = RoomEntity.EMPTY_ENTITY;
         RoomEntity existingUser = RoomEntity.EMPTY_ENTITY;
-        if (!roomName.isEmpty())
+        if (roomName != null && !roomName.isEmpty())
             existingUser = roomRepository.findByRoomName(roomName);
         if (existingUser == null)
             newRoom = roomRepository.save(new RoomEntity(null, roomName, Collections.emptySet()));
@@ -35,15 +35,16 @@ public class RoomService {
     }
 
 
-
     public RoomEntity updateRoom(RoomEntity roomEntity) {
-        Integer id = roomEntity.getId();
         RoomEntity result = RoomEntity.EMPTY_ENTITY;
-        if (roomRepository.existsById(id)) {
-            RoomEntity existingRoom = roomRepository.getReferenceById(id);
-            existingRoom.setRoomName(roomEntity.getRoomName());
-            existingRoom.setRoomUsers(roomEntity.getRoomUsers());
-            result = roomRepository.save(existingRoom);
+        if (roomEntity != null) {
+            Integer id = roomEntity.getId();
+            if (roomRepository.existsById(id)) {
+                RoomEntity existingRoom = roomRepository.getReferenceById(id);
+                existingRoom.setRoomName(roomEntity.getRoomName());
+                existingRoom.setRoomUsers(roomEntity.getRoomUsers());
+                result = roomRepository.save(existingRoom);
+            }
         }
         return result;
     }

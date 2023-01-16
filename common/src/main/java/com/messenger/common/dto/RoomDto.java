@@ -1,9 +1,7 @@
 package com.messenger.common.dto;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class RoomDto implements Serializable {
 
@@ -45,6 +43,21 @@ public class RoomDto implements Serializable {
 
     public void setRoomUsers(Set<UserDto> roomUsers) {
         this.roomUsers = roomUsers;
+    }
+
+    public void addRoomUser(UserDto user) {
+        roomUsers.add(user);
+    }
+
+    public void removeRoomUser(UserDto user) {
+        if (roomUsers.contains(user)) roomUsers.remove(user);
+    }
+
+    public Set<String> getRoomUserNames(){
+        Set<String> set = new HashSet<>();
+            if (roomUsers.size()>0)
+                for (UserDto user:roomUsers) set.add(user.getUserName());
+        return set;
     }
 
     @Override
