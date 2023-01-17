@@ -31,9 +31,9 @@ public class MessageController {
     }
 
     @PutMapping(value = "/sendMessage", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void updateUser(@RequestBody MessageDto messageDtoDto) {
-        log.info("/sendMessage_{}", messageDtoDto);
-        MessageEntity messageToSend = modelMapper.map(messageDtoDto, MessageEntity.class);
+    public void updateUser(@RequestBody MessageDto messageDto) {
+        log.info("/sendMessage_{}", messageDto);
+        MessageEntity messageToSend = modelMapper.map(messageDto, MessageEntity.class);
         MessageEntity message = messageService.sendMessage(messageToSend);
 
         if (message == MessageEntity.EMPTY_ENTITY) {

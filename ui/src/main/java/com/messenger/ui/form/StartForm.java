@@ -2,6 +2,7 @@ package com.messenger.ui.form;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.messenger.common.dto.MessageDto;
 import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
 import com.messenger.ui.services.UiAction;
@@ -14,6 +15,8 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.Instant;
+import java.util.Date;
 
 public class StartForm {
     private static final Logger LOG = LoggerFactory.getLogger(StartForm.class);
@@ -39,7 +42,40 @@ public class StartForm {
     private boolean roomConnectedStatus;
 
     public StartForm() {
-        sendButton.addActionListener(e -> LOG.error("Going to send a message: [{}]", messageTextField.getText()));
+        sendButton.addActionListener(new ActionListener() {
+            //                e -> LOG.error("Going to send a message: [{}]", messageTextField.getText()));
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new SwingWorker() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        if (currentUser!=null && currentRoom!=null) {
+                            MessageDto message = new MessageDto(null, Date.from(Instant.now()), messageTextField.getText(), currentRoom, currentUser);
+                            uiAction.sendMessage(message);
+                            messageTextField.setText("");
+                        }
+                        return null;
+                    }
+                }.execute();
+            }
+        });
+        messageTextField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                changeSendButtonEnabledState();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                changeSendButtonEnabledState();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                changeSendButtonEnabledState();
+            }
+        });
+
         userLoginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -113,7 +149,7 @@ public class StartForm {
                             }
                         } else {
                             String roomName = roomNameTextField.getText();
-                            currentRoom = uiAction.roomEnter(roomName,currentUser);
+                            currentRoom = uiAction.roomEnter(roomName, currentUser);
                             if (currentRoom != RoomDto.EMPTY_ENTITY) {
                                 roomCreateConnectButton.setText("Leave Room");
                                 roomNameTextField.setEnabled(false);
@@ -125,6 +161,7 @@ public class StartForm {
                             }
                         }
                         roomCreateConnectButton.setEnabled(true);
+                        changeSendButtonEnabledState();
                         return null;
                     }
                 }.execute();
@@ -157,6 +194,11 @@ public class StartForm {
         roomNameTextField.setEnabled(userLoggedInStatus);
         roomCreateConnectButton.setEnabled(!roomNameTextField.getText().isBlank()
                 & userLoggedInStatus);
+    }
+
+    private void changeSendButtonEnabledState() {
+        messageTextField.setEnabled(roomConnectedStatus);
+        sendButton.setEnabled(!messageTextField.getText().isBlank() & roomConnectedStatus);
     }
 
     public JPanel getMainPanel() {
@@ -228,6 +270,7 @@ public class StartForm {
         // TODO: place custom component creation code here
         changeUserLoginButtonEnabledState();
         changeRoomCreateConnectButtonEnabledState();
+        changeSendButtonEnabledState();
 
     }
 }

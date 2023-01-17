@@ -23,11 +23,11 @@ public class MessageEntity {
     private String messageText;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "room_id", insertable = false, updatable = false)
+    @JoinColumn(name = "room_id", insertable = true, updatable = true)
     private RoomEntity room;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", insertable = true, updatable = true)
     private UserEntity user;
 
     public MessageEntity() {

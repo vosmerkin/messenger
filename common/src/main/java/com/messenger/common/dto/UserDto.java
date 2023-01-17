@@ -71,7 +71,6 @@ public class UserDto implements Serializable {
                 ", userName='" + userName + '\'' +
                 ", lastActionDateTime=" + lastActionDateTime +
                 ", activeStatus=" + activeStatus +
-                ", contactList=" + contactList.toString() +
                 '}';
     }
 }

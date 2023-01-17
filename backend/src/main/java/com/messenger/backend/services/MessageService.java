@@ -21,15 +21,15 @@ public class MessageService {
 
     public MessageService(MessageRepository messageRepository, UserRepository userRepository, RoomRepository roomRepository) {
         this.messageRepository = messageRepository;
-        this.userRepository=userRepository;
-        this.roomRepository=roomRepository;
+        this.userRepository = userRepository;
+        this.roomRepository = roomRepository;
     }
 
     public MessageEntity sendMessage(MessageEntity message) {
         MessageEntity result = MessageEntity.EMPTY_ENTITY;
         if (message != null) {
             if (userRepository.existsById(message.getUser().getId()) && roomRepository.existsById(message.getRoom().getId())) {
-                result=messageRepository.save(message);
+                result = messageRepository.save(message);
             }
         }
         return result;
