@@ -78,7 +78,6 @@ public class RoomDto implements Serializable {
         return "RoomDto{" +
                 "id=" + id +
                 ", roomName='" + roomName + '\'' +
-                ", roomUsers=" + roomUsers +
                 '}';
     }
 

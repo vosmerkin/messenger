@@ -27,7 +27,8 @@ public class HttpBackendClient {
     private final String userRequestAddress;
     private final String userUpdateAddress;
     private final String roomRequestAddress;
-    private final String roomUpdateUsersList;
+    private final String roomUpdateUsersListAddress;
+    private final String messageSendAddress;
 
 
     public HttpBackendClient() {
@@ -38,7 +39,8 @@ public class HttpBackendClient {
         userUpdateAddress = backendHost + PropertyManager.getProperty("backend.user_update");
         roomCreateAddress = backendHost + PropertyManager.getProperty("backend.room_create");
         roomRequestAddress = backendHost + PropertyManager.getProperty("backend.room_request");
-        roomUpdateUsersList = backendHost + PropertyManager.getProperty("backend.room_update_users");
+        roomUpdateUsersListAddress = backendHost + PropertyManager.getProperty("backend.room_update_users");
+        messageSendAddress = backendHost + PropertyManager.getProperty("backend.message_send");
     }
 
 
@@ -130,7 +132,7 @@ public class HttpBackendClient {
     }
 
     public RoomDto roomUpdateUsersList(RoomDto currentRoom) throws InterruptedException, HttpClientIOException {
-        var request = HttpRequest.newBuilder(URI.create(roomUpdateUsersList))
+        var request = HttpRequest.newBuilder(URI.create(roomUpdateUsersListAddress))
                 .header(CONTENT_TYPE, APPLICATION_JSON)
                 .PUT(HttpRequest.BodyPublishers.ofString(JsonMapper.toJson(currentRoom)))
                 .build();
@@ -141,5 +143,19 @@ public class HttpBackendClient {
             throw new HttpClientIOException("IOException to remote address " + userUpdateAddress);
         }
         return JsonMapper.fromJson(response.body(), RoomDto.class);
+    }
+
+    public void messageSend(MessageDto message) throws InterruptedException, HttpClientIOException {
+        log.debug("HttpClient sending message {}", message.getMessageText());
+        var request = HttpRequest.newBuilder(URI.create(messageSendAddress))
+                .header(CONTENT_TYPE, APPLICATION_JSON)
+                .PUT(HttpRequest.BodyPublishers.ofString(JsonMapper.toJson(message)))
+                .build();
+        HttpResponse<String> response = null;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException e) {
+            throw new HttpClientIOException("IOException to remote address " + messageSendAddress);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.messenger.ui.services;
 
+import com.messenger.common.dto.MessageDto;
 import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
 import com.messenger.ui.exceptions.RoomNotFoundException;
@@ -143,5 +144,19 @@ public class UiAction {
             log.debug(String.valueOf(ex));
         }
         return currentRoom;
+    }
+
+    public void sendMessage(MessageDto message) {
+        try {
+            httpBackendClient.messageSend(message);
+        } catch (IOException ex) {
+            log.debug(String.valueOf(ex));
+            JOptionPane.showMessageDialog(null,
+                    "Connection problem. Try again later ",
+                    "HttpClient Error",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (InterruptedException ex) {
+            log.debug(String.valueOf(ex));
+        }
     }
 }
