@@ -17,15 +17,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.Instant;
 import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import static java.util.concurrent.TimeUnit.*;
 
 public class StartForm {
     private static final Logger LOG = LoggerFactory.getLogger(StartForm.class);
-
-    private DefaultListModel<UserDto> contactListModel = new DefaultListModel<>();
-
-    private DefaultListModel<String> roomUserListModel = new DefaultListModel<>();
-
-    private UiAction uiAction = new UiAction();
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private ScheduledFuture<?> messageListUpdaterHandle;
+    private final DefaultListModel<UserDto> contactListModel = new DefaultListModel<>();
+    private final DefaultListModel<String> roomUserListModel = new DefaultListModel<>();
+    private final UiAction uiAction = new UiAction();
     private UserDto currentUser;
     private RoomDto currentRoom;
     private JButton sendButton;
@@ -41,6 +44,9 @@ public class StartForm {
     private boolean userLoggedInStatus;
     private boolean roomConnectedStatus;
 
+
+    Timer timer;
+
     public StartForm() {
         sendButton.addActionListener(new ActionListener() {
             //                e -> LOG.error("Going to send a message: [{}]", messageTextField.getText()));
@@ -49,7 +55,7 @@ public class StartForm {
                 new SwingWorker() {
                     @Override
                     protected Object doInBackground() throws Exception {
-                        if (currentUser!=null && currentRoom!=null) {
+                        if (currentUser != null && currentRoom != null) {
                             MessageDto message = new MessageDto(null, Date.from(Instant.now()), messageTextField.getText(), currentRoom, currentUser);
                             uiAction.sendMessage(message);
                             messageTextField.setText("");
@@ -136,6 +142,12 @@ public class StartForm {
                     protected Object doInBackground() throws Exception {
                         roomCreateConnectButton.setEnabled(false);
                         if (roomConnectedStatus) {
+                            if (messageListUpdaterHandle!=null){
+                                messageListUpdaterHandle.cancel(true);
+                                messageListUpdaterHandle=null;
+                            }
+
+                            //stop message update
                             if (currentRoom.getRoomUsers().contains(currentUser))
                                 currentRoom.getRoomUsers().remove(currentUser);
                             RoomDto room = uiAction.updateRoom(currentRoom);
@@ -158,6 +170,14 @@ public class StartForm {
                                 roomUserList.setModel(roomUserListModel);
 //                                fillRoomUserList
 //                                fillMessagesFromHistory
+//                                start message updating
+                                final Runnable messageListUpdater = new Runnable() {
+                                    public void run() {
+                                        System.out.println("updating");
+                                    }
+                                };
+                                messageListUpdaterHandle =
+                                        scheduler.scheduleAtFixedRate(messageListUpdater, 5, 5, SECONDS);
                             }
                         }
                         roomCreateConnectButton.setEnabled(true);
@@ -272,5 +292,8 @@ public class StartForm {
         changeRoomCreateConnectButtonEnabledState();
         changeSendButtonEnabledState();
 
+
     }
+
+
 }
