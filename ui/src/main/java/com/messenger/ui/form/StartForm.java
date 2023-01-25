@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+
 import static java.util.concurrent.TimeUnit.*;
 
 public class StartForm {
@@ -142,9 +143,9 @@ public class StartForm {
                     protected Object doInBackground() throws Exception {
                         roomCreateConnectButton.setEnabled(false);
                         if (roomConnectedStatus) {
-                            if (messageListUpdaterHandle!=null){
+                            if (messageListUpdaterHandle != null) {
                                 messageListUpdaterHandle.cancel(true);
-                                messageListUpdaterHandle=null;
+                                messageListUpdaterHandle = null;
                             }
 
                             //stop message update
@@ -174,6 +175,8 @@ public class StartForm {
                                 final Runnable messageListUpdater = new Runnable() {
                                     public void run() {
                                         System.out.println("updating");
+                                        var messageListWorker = messageListWorker();
+                                        messageListWorker.execute();
                                     }
                                 };
                                 messageListUpdaterHandle =
@@ -223,6 +226,23 @@ public class StartForm {
 
     public JPanel getMainPanel() {
         return mainPanel;
+    }
+
+    private SwingWorker<Object, Object> messageListWorker() {
+        var swingWorker = new SwingWorker<Object, Object>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                System.out.println("Requesting new messages ");
+//                Thread.sleep(1500);
+                return null;
+            }
+            @Override
+            protected void done() {
+                System.out.println("Adding new messages to JList");
+            }
+        };
+        return swingWorker;
     }
 
 
