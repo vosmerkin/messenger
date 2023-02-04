@@ -8,6 +8,9 @@ import com.messenger.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
+
 @Service
 public class MessageService {
     @Autowired
@@ -32,6 +35,14 @@ public class MessageService {
                 result = messageRepository.save(message);
             }
         }
+        return result;
+    }
+
+    public List<MessageEntity> getByRoomName(Integer id) {
+
+        List<MessageEntity> result= Collections.emptyList();
+        if (id!=null)
+            result = messageRepository.getByRoomId(id);
         return result;
     }
 }

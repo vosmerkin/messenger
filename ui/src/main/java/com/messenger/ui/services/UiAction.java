@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.util.List;
 
 public class UiAction {
     private static final Logger log = LoggerFactory.getLogger(HttpBackendClient.class);
@@ -159,4 +160,8 @@ public class UiAction {
             log.debug(String.valueOf(ex));
         }
     }
+
+//    public List<MessageDto> requestRoomMessages(Integer id) {
+//        return null;
+//    }
 }
