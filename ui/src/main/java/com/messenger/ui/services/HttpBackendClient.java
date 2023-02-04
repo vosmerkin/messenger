@@ -183,7 +183,7 @@ public class HttpBackendClient {
             throw new HttpClientIOException("IOException to remote address " + url);
         }
         MessageDto[] messagesArray = JsonMapper.fromJson(response.body(), MessageDto[].class);
-        return Arrays.asList(messagesArray);
+        return new ArrayList<>(Arrays.asList(messagesArray));
 
     }
 }
