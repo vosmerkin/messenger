@@ -234,7 +234,7 @@ public class StartForm {
             @Override
             protected Void doInBackground() throws Exception {
                 System.out.println("Requesting new messages ");
-//                uiAction.requestRoomMessages(currentRoom.getId());
+                uiAction.requestRoomMessages(currentRoom.getId());
 //                Thread.sleep(1500);
                 return null;
             }

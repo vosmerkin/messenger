@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UiAction {
@@ -80,7 +81,7 @@ public class UiAction {
         return userDto;
     }
 
-    public RoomDto roomEnter(String roomName,UserDto user) {
+    public RoomDto roomEnter(String roomName, UserDto user) {
         RoomDto roomDto = RoomDto.EMPTY_ENTITY;
         try {
             //get roomDto
@@ -108,7 +109,7 @@ public class UiAction {
             }
         }
         //if present - get room users and history
-        if (roomDto!=RoomDto.EMPTY_ENTITY) {
+        if (roomDto != RoomDto.EMPTY_ENTITY) {
             roomDto.addRoomUser(user);
             updateRoom(roomDto);
         }
@@ -161,7 +162,19 @@ public class UiAction {
         }
     }
 
-//    public List<MessageDto> requestRoomMessages(Integer id) {
-//        return null;
-//    }
+    public List<MessageDto> requestRoomMessages(Integer roomId) {
+        List<MessageDto> messages = new ArrayList<>();
+        try {
+            messages = httpBackendClient.getMessages(roomId);
+        } catch (IOException ex) {
+            log.debug("IOException to remote address {}", ex);
+            JOptionPane.showMessageDialog(null,
+                    "Connection problem. Try again later ",
+                    "HttpClient Error",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (InterruptedException ex) {
+            log.debug("InterruptedException {}", ex);
+        }
+        return messages;
+    }
 }
