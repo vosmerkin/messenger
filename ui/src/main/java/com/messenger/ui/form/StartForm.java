@@ -12,11 +12,16 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -29,24 +34,24 @@ public class StartForm {
     private ScheduledFuture<?> messageListUpdaterHandle;
     private final DefaultListModel<UserDto> contactListModel = new DefaultListModel<>();
     private final DefaultListModel<String> roomUserListModel = new DefaultListModel<>();
+    private final DefaultTableModel messageListModel = new DefaultTableModel(new String[][]{{"User", "Date", "Text"}}, new String[]{"User", "Date", "Text"});
     private final UiAction uiAction = new UiAction();
     private UserDto currentUser;
     private RoomDto currentRoom;
+    private List<MessageDto> currentRoomMessageList;
     private JButton sendButton;
     private JTextField messageTextField;
     private JPanel mainPanel;
-    private JTextField roomChatTextField;
     private JList roomUserList;
     private JButton userLoginButton;
     private JList contactList;
     private JButton roomCreateConnectButton;
     private JTextField userNameTextField;
     private JTextField roomNameTextField;
+    private JTable roomChatTable;
     private boolean userLoggedInStatus;
     private boolean roomConnectedStatus;
 
-
-    Timer timer;
 
     public StartForm() {
         sendButton.addActionListener(new ActionListener() {
@@ -167,20 +172,30 @@ public class StartForm {
                                 roomCreateConnectButton.setText("Leave Room");
                                 roomNameTextField.setEnabled(false);
                                 roomConnectedStatus = true;
+//                                fillRoomUserList
                                 roomUserListModel.addAll(currentRoom.getRoomUserNames());
                                 roomUserList.setModel(roomUserListModel);
-//                                fillRoomUserList
 //                                fillMessagesFromHistory
+                                LOG.info("requesting message history");
+                                currentRoomMessageList = new CopyOnWriteArrayList<>();
+                                currentRoomMessageList = uiAction.requestRoomMessages(currentRoom.getId());
+                                for (MessageDto message : currentRoomMessageList)
+                                    messageListModel.addRow(
+                                            new String[]{message.getUser().getUserName(),
+                                                    new SimpleDateFormat("HH:mm:ss").format(message.getMessageDateTime()),
+                                                    message.getMessageText()});
+
+
 //                                start message updating
+                                LOG.info("creating and scheduling Runnable for updating messages");
                                 final Runnable messageListUpdater = new Runnable() {
                                     public void run() {
-                                        System.out.println("updating");
                                         var messageListWorker = messageListWorker();
                                         messageListWorker.execute();
                                     }
                                 };
                                 messageListUpdaterHandle =
-                                        scheduler.scheduleAtFixedRate(messageListUpdater, 5, 5, SECONDS);
+                                        scheduler.scheduleAtFixedRate(messageListUpdater, 5, 20, SECONDS);
                             }
                         }
                         roomCreateConnectButton.setEnabled(true);
@@ -207,6 +222,14 @@ public class StartForm {
             }
         });
 
+        changeUserLoginButtonEnabledState();
+        changeRoomCreateConnectButtonEnabledState();
+        changeSendButtonEnabledState();
+        roomChatTable.setModel(messageListModel);
+        roomChatTable.getColumnModel().getColumn(0).setPreferredWidth((int) (roomChatTable.getWidth() * 0.2));
+        roomChatTable.getColumnModel().getColumn(1).setPreferredWidth((int) (roomChatTable.getWidth() * 0.2));
+        roomChatTable.getColumnModel().getColumn(2).setWidth((int) (roomChatTable.getWidth() * 0.6));
+
     }
 
     private void changeUserLoginButtonEnabledState() {
@@ -230,16 +253,31 @@ public class StartForm {
 
     private SwingWorker<Object, Object> messageListWorker() {
         var swingWorker = new SwingWorker<Object, Object>() {
+            List<MessageDto> updatedMessageList;
 
             @Override
             protected Void doInBackground() throws Exception {
-                System.out.println("Requesting new messages ");
+                LOG.info("Requesting new messages");
+                updatedMessageList = uiAction.requestRoomMessages(currentRoom.getId());
 //                Thread.sleep(1500);
                 return null;
             }
+
             @Override
             protected void done() {
-                System.out.println("Adding new messages to JList");
+                LOG.info("Received {} new messages, updating JTable", currentRoomMessageList.size() - updatedMessageList.size());
+                //add messages difference to messagesModelList
+
+                updatedMessageList.removeAll(currentRoomMessageList);
+                if (updatedMessageList.size() > 0) {
+                    for (MessageDto message : updatedMessageList) {
+                        messageListModel.addRow(
+                                new String[]{message.getUser().getUserName(),
+                                        new SimpleDateFormat("HH:mm:ss").format(message.getMessageDateTime()),
+                                        message.getMessageText()});
+                        currentRoomMessageList.add(message);
+                    }
+                }
             }
         };
         return swingWorker;
@@ -261,12 +299,13 @@ public class StartForm {
      * @noinspection ALL
      */
     private void $$$setupUI$$$() {
+
         mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayoutManager(4, 4, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.setName("");
-        roomChatTextField = new JTextField();
-        roomChatTextField.setText("");
-        mainPanel.add(roomChatTextField, new GridConstraints(2, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        roomChatTable = new JTable();
+        //fff
+        mainPanel.add(roomChatTable, new GridConstraints(2, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         sendButton = new JButton();
         sendButton.setText("Send");
         mainPanel.add(sendButton, new GridConstraints(3, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -308,9 +347,6 @@ public class StartForm {
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
-        changeUserLoginButtonEnabledState();
-        changeRoomCreateConnectButtonEnabledState();
-        changeSendButtonEnabledState();
 
 
     }
