@@ -44,3 +44,8 @@ test-tmp
 
 .txt
 .idea
+/deploy/.terraform.lock.hcl
+/deploy/aws-app-stack-plan
+/deploy/*.tfstate
+/deploy/*.tfstate.backup
+/deploy/*.tfvars

@@ -106,7 +106,7 @@ class RoomControllerTest {
         RoomEntity testRoom = new RoomEntity(TEST_ID, ROOM_NAME, Collections.emptySet());
         when(roomService.updateRoom(ArgumentMatchers.any())).thenReturn(testRoom);
 
-        mockMvc.perform(put("/updateRoom")
+        mockMvc.perform(put("/updateRoomUsers")
                         .contentType("application/json")
                         .content(JsonMapper.toJson(testRoom))
                         .accept(MediaType.APPLICATION_JSON))
@@ -122,7 +122,7 @@ class RoomControllerTest {
         RoomEntity testRoom = new RoomEntity(TEST_ID, ROOM_NAME, Collections.emptySet());
         when(roomService.updateRoom(ArgumentMatchers.any())).thenReturn(RoomEntity.EMPTY_ENTITY);
 
-        mockMvc.perform(put("/updateRoom")
+        mockMvc.perform(put("/updateRoomUsers")
                         .contentType("application/json")
                         .content(JsonMapper.toJson(testRoom))
                         .accept(MediaType.APPLICATION_JSON))
