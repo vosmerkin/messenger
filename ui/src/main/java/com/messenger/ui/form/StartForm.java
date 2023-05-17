@@ -6,6 +6,8 @@ import com.messenger.common.dto.MessageDto;
 import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
 import com.messenger.ui.services.UiAction;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +20,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -26,7 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class StartForm {
     private static final Logger LOG = LoggerFactory.getLogger(StartForm.class);
@@ -35,11 +36,16 @@ public class StartForm {
     private final DefaultListModel<UserDto> contactListModel = new DefaultListModel<>();
     private final DefaultListModel<String> roomUserListModel = new DefaultListModel<>();
     private final DefaultTableModel messageListModel = new DefaultTableModel(new String[][]{{"User", "Date", "Text"}}, new String[]{"User", "Date", "Text"});
+    @Getter
     private final UiAction uiAction = new UiAction();
+    @Getter
     private UserDto currentUser;
+    @Getter
     private RoomDto currentRoom;
     private List<MessageDto> currentRoomMessageList;
     private JButton sendButton;
+    @Getter
+    @Setter
     private JTextField messageTextField;
     private JPanel mainPanel;
     private JList roomUserList;
@@ -54,23 +60,26 @@ public class StartForm {
 
 
     public StartForm() {
-        sendButton.addActionListener(new ActionListener() {
-            //                e -> LOG.error("Going to send a message: [{}]", messageTextField.getText()));
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new SwingWorker() {
-                    @Override
-                    protected Object doInBackground() throws Exception {
-                        if (currentUser != null && currentRoom != null) {
-                            MessageDto message = new MessageDto(null, Date.from(Instant.now()), messageTextField.getText(), currentRoom, currentUser);
-                            uiAction.sendMessage(message);
-                            messageTextField.setText("");
-                        }
-                        return null;
-                    }
-                }.execute();
-            }
-        });
+        ActionListener actionListener = new SendButtonActionListener(this);
+        messageTextField.addActionListener(actionListener);
+        sendButton.addActionListener(actionListener);
+//        sendButton.addActionListener(new ActionListener() {
+//            //                e -> LOG.error("Going to send a message: [{}]", messageTextField.getText()));
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                new SwingWorker() {
+//                    @Override
+//                    protected Object doInBackground() throws Exception {
+//                        if (currentUser != null && currentRoom != null) {
+//                            MessageDto message = new MessageDto(null, Date.from(Instant.now()), messageTextField.getText(), currentRoom, currentUser);
+//                            uiAction.sendMessage(message);
+//                            messageTextField.setText("");
+//                        }
+//                        return null;
+//                    }
+//                }.execute();
+//            }
+//        });
         messageTextField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {

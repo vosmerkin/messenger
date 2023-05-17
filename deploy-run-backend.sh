@@ -2,7 +2,7 @@
 set -x
 
 echo EC2_IP to ui network-dev.properties
-EC2_IP=44.204.43.15
+EC2_IP=54.196.76.203
 
 echo RDS_ADDRESS to backend network-dev.properties
 RDS_ADDRESS=edumessenger.cfufiisvplbv.us-east-1.rds.amazonaws.com
