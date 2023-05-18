@@ -8,6 +8,7 @@ import com.messenger.common.dto.UserDto;
 import com.messenger.ui.services.UiAction;
 import lombok.Getter;
 import lombok.Setter;
+import org.jdom.Parent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,7 @@ public class StartForm {
     private ScheduledFuture<?> messageListUpdaterHandle;
     private final DefaultListModel<UserDto> contactListModel = new DefaultListModel<>();
     private final DefaultListModel<String> roomUserListModel = new DefaultListModel<>();
+    @Getter
     private final DefaultTableModel messageListModel = new DefaultTableModel(new String[][]{{"User", "Date", "Text"}}, new String[]{"User", "Date", "Text"});
     @Getter
     private final UiAction uiAction = new UiAction();
@@ -42,10 +44,10 @@ public class StartForm {
     private UserDto currentUser;
     @Getter
     private RoomDto currentRoom;
+    @Getter
     private List<MessageDto> currentRoomMessageList;
     private JButton sendButton;
     @Getter
-    @Setter
     private JTextField messageTextField;
     private JPanel mainPanel;
     private JList roomUserList;
@@ -173,6 +175,8 @@ public class StartForm {
                                 roomConnectedStatus = false;
                                 //clear controls - usersList,msgList, etc
                                 roomUserListModel.removeAllElements();
+                                if (messageListUpdaterHandle!=null) messageListUpdaterHandle.cancel(true);
+
                             }
                         } else {
                             String roomName = roomNameTextField.getText();
@@ -199,7 +203,7 @@ public class StartForm {
                                 LOG.info("creating and scheduling Runnable for updating messages");
                                 final Runnable messageListUpdater = new Runnable() {
                                     public void run() {
-                                        var messageListWorker = messageListWorker();
+                                        var messageListWorker = new messageListUpdaterSwingWorker(StartForm.this);
                                         messageListWorker.execute();
                                     }
                                 };
@@ -260,37 +264,37 @@ public class StartForm {
         return mainPanel;
     }
 
-    private SwingWorker<Object, Object> messageListWorker() {
-        var swingWorker = new SwingWorker<Object, Object>() {
-            List<MessageDto> updatedMessageList;
-
-            @Override
-            protected Void doInBackground() throws Exception {
-                LOG.info("Requesting new messages");
-                updatedMessageList = uiAction.requestRoomMessages(currentRoom.getId());
-//                Thread.sleep(1500);
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                LOG.info("Received {} new messages, updating JTable", currentRoomMessageList.size() - updatedMessageList.size());
-                //add messages difference to messagesModelList
-
-                updatedMessageList.removeAll(currentRoomMessageList);
-                if (updatedMessageList.size() > 0) {
-                    for (MessageDto message : updatedMessageList) {
-                        messageListModel.addRow(
-                                new String[]{message.getUser().getUserName(),
-                                        new SimpleDateFormat("HH:mm:ss").format(message.getMessageDateTime()),
-                                        message.getMessageText()});
-                        currentRoomMessageList.add(message);
-                    }
-                }
-            }
-        };
-        return swingWorker;
-    }
+//    private SwingWorker<Object, Object> messageListWorker() {
+//        var swingWorker = new SwingWorker<Object, Object>() {
+//            List<MessageDto> updatedMessageList;
+//
+//            @Override
+//            protected Void doInBackground() throws Exception {
+//                LOG.info("Requesting new messages");
+//                updatedMessageList = uiAction.requestRoomMessages(currentRoom.getId());
+////                Thread.sleep(1500);
+//                return null;
+//            }
+//
+//            @Override
+//            protected void done() {
+//                LOG.info("Received {} new messages, updating JTable", currentRoomMessageList.size() - updatedMessageList.size());
+//                //add messages difference to messagesModelList
+//
+//                updatedMessageList.removeAll(currentRoomMessageList);
+//                if (updatedMessageList.size() > 0) {
+//                    for (MessageDto message : updatedMessageList) {
+//                        messageListModel.addRow(
+//                                new String[]{message.getUser().getUserName(),
+//                                        new SimpleDateFormat("HH:mm:ss").format(message.getMessageDateTime()),
+//                                        message.getMessageText()});
+//                        currentRoomMessageList.add(message);
+//                    }
+//                }
+//            }
+//        };
+//        return swingWorker;
+//    }
 
 
     {

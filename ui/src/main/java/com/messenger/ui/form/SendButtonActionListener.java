@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.Date;
 
 public class SendButtonActionListener implements ActionListener {
-    StartForm form;
+    private StartForm form;
 
     public SendButtonActionListener(StartForm form) {
         this.form = form;
