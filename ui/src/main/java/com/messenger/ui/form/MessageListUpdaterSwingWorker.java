@@ -11,29 +11,23 @@ import javax.swing.table.DefaultTableModel;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-public class messageListUpdaterSwingWorker extends SwingWorker<Object, Object> {
+public class MessageListUpdaterSwingWorker extends SwingWorker<Object, Object> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(messageListUpdaterSwingWorker.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MessageListUpdaterSwingWorker.class);
     private StartForm form;
 
     private UiAction uiAction;
-    private RoomDto currentRoom;
-    private List<MessageDto> currentRoomMessageList;
-    private final DefaultTableModel messageListModel;
-
     private List<MessageDto> updatedMessageList;
 
-    public messageListUpdaterSwingWorker(StartForm form) {
+    public MessageListUpdaterSwingWorker(StartForm form) {
         this.form = form;
         uiAction = form.getUiAction();
-        currentRoom = form.getCurrentRoom();
-        currentRoomMessageList = form.getCurrentRoomMessageList();
-        messageListModel = form.getMessageListModel();
     }
 
 
     @Override
     protected Void doInBackground() throws Exception {
+        var currentRoom = form.getCurrentRoom();
         LOG.info("Requesting new messages");
         updatedMessageList = uiAction.requestRoomMessages(currentRoom.getId());
 //                Thread.sleep(1500);
@@ -42,7 +36,9 @@ public class messageListUpdaterSwingWorker extends SwingWorker<Object, Object> {
 
     @Override
     protected void done() {
-        LOG.info("Received {} new messages, updating JTable", currentRoomMessageList.size() - updatedMessageList.size());
+        var currentRoomMessageList = form.getCurrentRoomMessageList();
+        var messageListModel = form.getMessageListModel();
+        LOG.info("Received {} new messages, updating JTable", form.getCurrentRoomMessageList().size() - updatedMessageList.size());
         //add messages difference to messagesModelList
 
         updatedMessageList.removeAll(currentRoomMessageList);

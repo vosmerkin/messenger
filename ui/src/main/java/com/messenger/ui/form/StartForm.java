@@ -7,8 +7,6 @@ import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
 import com.messenger.ui.services.UiAction;
 import lombok.Getter;
-import lombok.Setter;
-import org.jdom.Parent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,8 +18,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
@@ -59,9 +55,11 @@ public class StartForm {
     private JTable roomChatTable;
     private boolean userLoggedInStatus;
     private boolean roomConnectedStatus;
-
+    @Getter
+    private MessageListUpdaterSwingWorker messageListWorker;
 
     public StartForm() {
+        messageListWorker = new MessageListUpdaterSwingWorker(StartForm.this);
         ActionListener actionListener = new SendButtonActionListener(this);
         messageTextField.addActionListener(actionListener);
         sendButton.addActionListener(actionListener);
@@ -175,7 +173,7 @@ public class StartForm {
                                 roomConnectedStatus = false;
                                 //clear controls - usersList,msgList, etc
                                 roomUserListModel.removeAllElements();
-                                if (messageListUpdaterHandle!=null) messageListUpdaterHandle.cancel(true);
+                                if (messageListUpdaterHandle != null) messageListUpdaterHandle.cancel(true);
 
                             }
                         } else {
@@ -189,21 +187,20 @@ public class StartForm {
                                 roomUserListModel.addAll(currentRoom.getRoomUserNames());
                                 roomUserList.setModel(roomUserListModel);
 //                                fillMessagesFromHistory
-                                LOG.info("requesting message history");
                                 currentRoomMessageList = new CopyOnWriteArrayList<>();
-                                currentRoomMessageList = uiAction.requestRoomMessages(currentRoom.getId());
-                                for (MessageDto message : currentRoomMessageList)
-                                    messageListModel.addRow(
-                                            new String[]{message.getUser().getUserName(),
-                                                    new SimpleDateFormat("HH:mm:ss").format(message.getMessageDateTime()),
-                                                    message.getMessageText()});
+//                                LOG.info("requesting message history");
+//                                currentRoomMessageList = uiAction.requestRoomMessages(currentRoom.getId());
+//                                for (MessageDto message : currentRoomMessageList)
+//                                    messageListModel.addRow(
+//                                            new String[]{message.getUser().getUserName(),
+//                                                    new SimpleDateFormat("HH:mm:ss").format(message.getMessageDateTime()),
+//                                                    message.getMessageText()});
 
 
 //                                start message updating
                                 LOG.info("creating and scheduling Runnable for updating messages");
                                 final Runnable messageListUpdater = new Runnable() {
                                     public void run() {
-                                        var messageListWorker = new messageListUpdaterSwingWorker(StartForm.this);
                                         messageListWorker.execute();
                                     }
                                 };
