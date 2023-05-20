@@ -55,14 +55,12 @@ public class StartForm {
     private JTable roomChatTable;
     private boolean userLoggedInStatus;
     private boolean roomConnectedStatus;
-    @Getter
-    private MessageListUpdaterSwingWorker messageListWorker;
+
 
     public StartForm() {
-        messageListWorker = new MessageListUpdaterSwingWorker(StartForm.this);
-        ActionListener actionListener = new SendButtonActionListener(this);
-        messageTextField.addActionListener(actionListener);
-        sendButton.addActionListener(actionListener);
+        ActionListener sendButtonActionListener = new SendButtonActionListener(this);
+        messageTextField.addActionListener(sendButtonActionListener);
+        sendButton.addActionListener(sendButtonActionListener);
 //        sendButton.addActionListener(new ActionListener() {
 //            //                e -> LOG.error("Going to send a message: [{}]", messageTextField.getText()));
 //            @Override
@@ -157,10 +155,6 @@ public class StartForm {
                     protected Object doInBackground() throws Exception {
                         roomCreateConnectButton.setEnabled(false);
                         if (roomConnectedStatus) {
-                            if (messageListUpdaterHandle != null) {
-                                messageListUpdaterHandle.cancel(true);
-                                messageListUpdaterHandle = null;
-                            }
 
                             //stop message update
                             if (currentRoom.getRoomUsers().contains(currentUser))
@@ -201,6 +195,7 @@ public class StartForm {
                                 LOG.info("creating and scheduling Runnable for updating messages");
                                 final Runnable messageListUpdater = new Runnable() {
                                     public void run() {
+                                        MessageListUpdaterSwingWorker messageListWorker = new MessageListUpdaterSwingWorker(StartForm.this);
                                         messageListWorker.execute();
                                     }
                                 };

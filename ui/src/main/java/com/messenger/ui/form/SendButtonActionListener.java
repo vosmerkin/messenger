@@ -1,6 +1,7 @@
 package com.messenger.ui.form;
 
 import com.messenger.common.dto.MessageDto;
+import com.messenger.ui.services.UiAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,9 +14,11 @@ import java.util.Date;
 public class SendButtonActionListener implements ActionListener {
     private static final Logger LOG = LoggerFactory.getLogger(SendButtonActionListener.class);
     private StartForm form;
+    private UiAction uiAction;
 
     public SendButtonActionListener(StartForm form) {
         this.form = form;
+        uiAction = form.getUiAction();
     }
 
     @Override
@@ -26,14 +29,14 @@ public class SendButtonActionListener implements ActionListener {
                 var currentUser = form.getCurrentUser();
                 var currentRoom = form.getCurrentRoom();
                 var messageTextField = form.getMessageTextField();
-                var uiAction = form.getUiAction();
-                var messageListWorker = form.getMessageListWorker();
+//                var messageListWorker = form.getMessageListWorker();
 
                 if (form.getCurrentUser() != null && form.getCurrentRoom() != null) {
                     MessageDto message = new MessageDto(null, Date.from(Instant.now()), messageTextField.getText(), currentRoom, currentUser);
                     uiAction.sendMessage(message);
 
-                    //run messageListUpdaterSwingWorker
+                    LOG.info("run messageListUpdaterSwingWorker to update messages immediately after sending");
+                    MessageListUpdaterSwingWorker messageListWorker = new MessageListUpdaterSwingWorker(form);
                     messageListWorker.execute();
 
                     messageTextField.setText("");
