@@ -7,6 +7,7 @@ import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
 import com.messenger.ui.services.UiAction;
 import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
@@ -30,6 +30,7 @@ public class StartForm {
     private static final Logger LOG = LoggerFactory.getLogger(StartForm.class);
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> messageListUpdaterHandle;
+    @Getter
     private final DefaultListModel<UserDto> contactListModel = new DefaultListModel<>();
     private final DefaultListModel<String> roomUserListModel = new DefaultListModel<>();
     @Getter
@@ -37,6 +38,7 @@ public class StartForm {
     @Getter
     private final UiAction uiAction = new UiAction();
     @Getter
+    @Setter
     private UserDto currentUser;
     @Getter
     private RoomDto currentRoom;
@@ -47,12 +49,16 @@ public class StartForm {
     private JTextField messageTextField;
     private JPanel mainPanel;
     private JList roomUserList;
+    @Getter
     private JButton userLoginButton;
     private JList contactList;
     private JButton roomCreateConnectButton;
+    @Getter
     private JTextField userNameTextField;
     private JTextField roomNameTextField;
     private JTable roomChatTable;
+    @Getter
+    @Setter
     private boolean userLoggedInStatus;
     private boolean roomConnectedStatus;
 
@@ -95,42 +101,45 @@ public class StartForm {
             }
         });
 
-        userLoginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new SwingWorker() {
-                    @Override
-                    protected Object doInBackground() throws Exception {
-                        userLoginButton.setEnabled(false);
-                        if (userLoggedInStatus) {
-                            UserDto user = uiAction.userLogOffAction(currentUser);
-                            if (user != UserDto.EMPTY_ENTITY) {
-                                currentUser = UserDto.EMPTY_ENTITY;
-                                userLoginButton.setText("User Login");
-                                userNameTextField.setEnabled(true);
-                                userLoggedInStatus = false;
-                                //clear controls - contactList,msgList, etc
-                                contactListModel.removeAllElements();
-                            }
-                        } else {
-                            String userName = userNameTextField.getText();
-                            currentUser = uiAction.userLogInAction(userName);
-                            if (currentUser != UserDto.EMPTY_ENTITY) {
-                                userLoginButton.setText("User Logoff");
-                                userNameTextField.setEnabled(false);
-                                userLoggedInStatus = true;
-//                                contactListModel.addAll(currentUser.getContactList());
-//                                contactList.setModel(contactListModel);
-                                //fill Contact List from UserEntity
-                            }
-                        }
-                        userLoginButton.setEnabled(true);
-                        changeRoomCreateConnectButtonEnabledState();
-                        return null;
-                    }
-                }.execute();
-            }
-        });
+        ActionListener userLoginButtonActionListener = new UserLoginButtonActionListener(this);
+        userLoginButton.addActionListener(userLoginButtonActionListener);
+        userNameTextField.addActionListener(userLoginButtonActionListener);
+//                new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                new SwingWorker() {
+//                    @Override
+//                    protected Object doInBackground() throws Exception {
+//                        userLoginButton.setEnabled(false);
+//                        if (userLoggedInStatus) {
+//                            UserDto user = uiAction.userLogOffAction(currentUser);
+//                            if (user != UserDto.EMPTY_ENTITY) {
+//                                currentUser = UserDto.EMPTY_ENTITY;
+//                                userLoginButton.setText("User Login");
+//                                userNameTextField.setEnabled(true);
+//                                userLoggedInStatus = false;
+//                                //clear controls - contactList,msgList, etc
+//                                contactListModel.removeAllElements();
+//                            }
+//                        } else {
+//                            String userName = userNameTextField.getText();
+//                            currentUser = uiAction.userLogInAction(userName);
+//                            if (currentUser != UserDto.EMPTY_ENTITY) {
+//                                userLoginButton.setText("User Logoff");
+//                                userNameTextField.setEnabled(false);
+//                                userLoggedInStatus = true;
+////                                contactListModel.addAll(currentUser.getContactList());
+////                                contactList.setModel(contactListModel);
+//                                //fill Contact List from UserEntity
+//                            }
+//                        }
+//                        userLoginButton.setEnabled(true);
+//                        changeRoomCreateConnectButtonEnabledState();
+//                        return null;
+//                    }
+//                }.execute();
+//            }
+//        });
         userNameTextField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -155,7 +164,6 @@ public class StartForm {
                     protected Object doInBackground() throws Exception {
                         roomCreateConnectButton.setEnabled(false);
                         if (roomConnectedStatus) {
-
                             //stop message update
                             if (currentRoom.getRoomUsers().contains(currentUser))
                                 currentRoom.getRoomUsers().remove(currentUser);
@@ -168,7 +176,6 @@ public class StartForm {
                                 //clear controls - usersList,msgList, etc
                                 roomUserListModel.removeAllElements();
                                 if (messageListUpdaterHandle != null) messageListUpdaterHandle.cancel(true);
-
                             }
                         } else {
                             String roomName = roomNameTextField.getText();
@@ -182,16 +189,6 @@ public class StartForm {
                                 roomUserList.setModel(roomUserListModel);
 //                                fillMessagesFromHistory
                                 currentRoomMessageList = new CopyOnWriteArrayList<>();
-//                                LOG.info("requesting message history");
-//                                currentRoomMessageList = uiAction.requestRoomMessages(currentRoom.getId());
-//                                for (MessageDto message : currentRoomMessageList)
-//                                    messageListModel.addRow(
-//                                            new String[]{message.getUser().getUserName(),
-//                                                    new SimpleDateFormat("HH:mm:ss").format(message.getMessageDateTime()),
-//                                                    message.getMessageText()});
-
-
-//                                start message updating
                                 LOG.info("creating and scheduling Runnable for updating messages");
                                 final Runnable messageListUpdater = new Runnable() {
                                     public void run() {
@@ -241,7 +238,7 @@ public class StartForm {
         userLoginButton.setEnabled(!userNameTextField.getText().isBlank());
     }
 
-    private void changeRoomCreateConnectButtonEnabledState() {
+    void changeRoomCreateConnectButtonEnabledState() {
         roomNameTextField.setEnabled(userLoggedInStatus);
         roomCreateConnectButton.setEnabled(!roomNameTextField.getText().isBlank()
                 & userLoggedInStatus);
