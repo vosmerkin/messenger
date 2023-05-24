@@ -10,12 +10,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class UserLoginButtonActionListener implements ActionListener {
-
     private static final Logger LOG = LoggerFactory.getLogger(UserLoginButtonActionListener.class);
-    private StartForm form;
-    private UiAction uiAction;
-    private JButton userLoginButton;
-    private JTextField userNameTextField;
+    private final StartForm form;
+    private final UiAction uiAction;
+    private final JButton userLoginButton;
+    private final JTextField userNameTextField;
     private final DefaultListModel<UserDto> contactListModel;
 
     public UserLoginButtonActionListener(StartForm form) {

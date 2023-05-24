@@ -1,46 +1,39 @@
 package com.messenger.ui.form;
 
 import com.messenger.common.dto.MessageDto;
-import com.messenger.common.dto.RoomDto;
 import com.messenger.ui.services.UiAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class MessageListUpdaterSwingWorker extends SwingWorker<Object, Object> {
-
     private static final Logger LOG = LoggerFactory.getLogger(MessageListUpdaterSwingWorker.class);
-    private StartForm form;
+    private final StartForm form;
+    private final UiAction uiAction;    private List<MessageDto> updatedMessageList;
+    private final List<MessageDto> currentRoomMessageList;
 
-    private UiAction uiAction;
-    private List<MessageDto> updatedMessageList;
-
-    public MessageListUpdaterSwingWorker(StartForm form) {
+    public MessageListUpdaterSwingWorker(StartForm form, List<MessageDto> currentRoomMessageList) {
         this.form = form;
         uiAction = form.getUiAction();
+        this.currentRoomMessageList= currentRoomMessageList;
     }
 
-
     @Override
-    protected Void doInBackground() throws Exception {
+    protected Void doInBackground() {
         var currentRoom = form.getCurrentRoom();
         LOG.info("Requesting new messages");
         updatedMessageList = uiAction.requestRoomMessages(currentRoom.getId());
-//                Thread.sleep(1500);
         return null;
     }
 
     @Override
     protected void done() {
-        var currentRoomMessageList = form.getCurrentRoomMessageList();
         var messageListModel = form.getMessageListModel();
-        LOG.info("Received {} new messages, updating JTable", form.getCurrentRoomMessageList().size() - updatedMessageList.size());
+        LOG.info("Received {} new messages, updating JTable", currentRoomMessageList.size() - updatedMessageList.size());
         //add messages difference to messagesModelList
-
         updatedMessageList.removeAll(currentRoomMessageList);
         if (updatedMessageList.size() > 0) {
             for (MessageDto message : updatedMessageList) {

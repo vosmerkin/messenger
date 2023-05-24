@@ -1,5 +1,6 @@
 package com.messenger.ui.form;
 
+import com.messenger.common.dto.MessageDto;
 import com.messenger.common.dto.RoomDto;
 import com.messenger.ui.services.UiAction;
 import org.slf4j.Logger;
@@ -8,19 +9,34 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class RoomCreateConnectActionListener implements ActionListener {
     private static final Logger LOG = LoggerFactory.getLogger(RoomCreateConnectActionListener.class);
-    private StartForm form;
-    private UiAction uiAction;
+    private final StartForm form;
+    private final UiAction uiAction;
+    private final JButton roomCreateConnectButton;
+    private final JTextField roomNameTextField;
+    private final JList roomUserList;
+    private final ScheduledExecutorService scheduler;
+    private ScheduledFuture<?> messageListUpdaterHandle;
+    private final DefaultListModel<String> roomUserListModel;
+    private final List<MessageDto> currentRoomMessageList;
 
     public RoomCreateConnectActionListener(StartForm form) {
-        this.form=form;
+        this.form = form;
         uiAction = form.getUiAction();
-
+        roomCreateConnectButton = form.getRoomCreateConnectButton();
+        roomNameTextField = form.getRoomNameTextField();
+        roomUserListModel = form.getRoomUserListModel();
+        roomUserList = form.getRoomUserList();
+        scheduler = form.getScheduler();
+        messageListUpdaterHandle = form.getMessageListUpdaterHandle();
+        currentRoomMessageList=form.getCurrentRoomMessageList();
     }
 
     @Override
@@ -28,37 +44,40 @@ public class RoomCreateConnectActionListener implements ActionListener {
         new SwingWorker() {
             @Override
             protected Object doInBackground() throws Exception {
+                var roomConnectedStatus = form.isRoomConnectedStatus();
+                var currentUser = form.getCurrentUser();
+                var currentRoom = form.getCurrentRoom();
+//                var currentRoomMessageList = form.getCurrentRoomMessageList();
                 roomCreateConnectButton.setEnabled(false);
                 if (roomConnectedStatus) {
                     //stop message update
-                    if (currentRoom.getRoomUsers().contains(currentUser))
-                        currentRoom.getRoomUsers().remove(currentUser);
+                    currentRoom.getRoomUsers().remove(currentUser);
                     RoomDto room = uiAction.updateRoom(currentRoom);
                     if (room != RoomDto.EMPTY_ENTITY) {
-                        currentRoom = RoomDto.EMPTY_ENTITY;
+                        form.setCurrentRoom(currentRoom = RoomDto.EMPTY_ENTITY);
                         roomCreateConnectButton.setText("Enter Room");
                         roomNameTextField.setEnabled(true);
-                        roomConnectedStatus = false;
+                        form.setRoomConnectedStatus(roomConnectedStatus = false);
                         //clear controls - usersList,msgList, etc
                         roomUserListModel.removeAllElements();
+                        currentRoomMessageList.clear();
                         if (messageListUpdaterHandle != null) messageListUpdaterHandle.cancel(true);
                     }
                 } else {
                     String roomName = roomNameTextField.getText();
-                    currentRoom = uiAction.roomEnter(roomName, currentUser);
+                    form.setCurrentRoom(currentRoom = uiAction.roomEnter(roomName, currentUser));
                     if (currentRoom != RoomDto.EMPTY_ENTITY) {
                         roomCreateConnectButton.setText("Leave Room");
                         roomNameTextField.setEnabled(false);
-                        roomConnectedStatus = true;
+                        form.setRoomConnectedStatus(roomConnectedStatus = true);
 //                                fillRoomUserList
                         roomUserListModel.addAll(currentRoom.getRoomUserNames());
                         roomUserList.setModel(roomUserListModel);
 //                                fillMessagesFromHistory
-                        currentRoomMessageList = new CopyOnWriteArrayList<>();
                         LOG.info("creating and scheduling Runnable for updating messages");
                         final Runnable messageListUpdater = new Runnable() {
                             public void run() {
-                                MessageListUpdaterSwingWorker messageListWorker = new MessageListUpdaterSwingWorker(StartForm.this);
+                                MessageListUpdaterSwingWorker messageListWorker = new MessageListUpdaterSwingWorker(form, currentRoomMessageList);
                                 messageListWorker.execute();
                             }
                         };
@@ -67,7 +86,7 @@ public class RoomCreateConnectActionListener implements ActionListener {
                     }
                 }
                 roomCreateConnectButton.setEnabled(true);
-                changeSendButtonEnabledState();
+                form.changeSendButtonEnabledState();
                 return null;
             }
         }.execute();
