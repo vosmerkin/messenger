@@ -1,5 +1,5 @@
 allprojects {
-    group 'com.messanger'
+    group 'com.messenger'
     version '0.1.1-SNAPSHOT'
 }
 
