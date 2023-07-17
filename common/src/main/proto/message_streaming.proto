@@ -2,19 +2,16 @@ syntax = "proto3";
 
 
 option java_multiple_files = true;
-//option java_package = "generated";
+option java_package = "grpc_generated";
 
 service RoomMessagesStreamingService {
-  // Streams a many greetings
   rpc MessageStreaming (RoomRequest) returns (stream RoomMessagesResponse) {}
 }
 
-// The request message containing the user's name.
 message RoomRequest {
   string room_id = 1;
 }
 
-// The response message containing the greetings
 message RoomMessagesResponse {
   int32 user_id = 1;
   string message = 2;
