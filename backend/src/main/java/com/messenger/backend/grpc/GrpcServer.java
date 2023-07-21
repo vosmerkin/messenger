@@ -12,24 +12,28 @@ import java.io.IOException;
 
 public class GrpcServer {
     private static final Logger log = LoggerFactory.getLogger(GrpcServer.class);
-    Server server;
+    private Server server;
 
-    int port;
+    private int port;
 
     public GrpcServer(int port) {
-        server = ServerBuilder.forPort(this.port = port).addService(new RoomMessagesStreamingServiceImplBaseImpl()).build();
+        server = ServerBuilder
+                .forPort(this.port = port)
+                .addService(new RoomMessagesStreamingServiceImplBaseImpl())
+                .build();
         log.info("Grpc server created on port " + port);
     }
 
-    public void start() throws IOException {
+    public void start() throws IOException, InterruptedException {
         server.start();
+        server.awaitTermination();
         log.info("Grpc server started on port " + port);
     }
 
-    public void shutdown() throws InterruptedException {
+    public void shutdown() {
         server.shutdownNow();
         log.info("Grpc server shutdown");
-        server.awaitTermination();
+
     }
 
 

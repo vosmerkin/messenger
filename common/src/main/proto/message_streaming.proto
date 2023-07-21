@@ -9,11 +9,13 @@ service RoomMessagesStreamingService {
 }
 
 message RoomRequest {
-  string room_id = 1;
+  int32 room_id = 1;
 }
 
 message RoomMessagesResponse {
   int32 user_id = 1;
   string message = 2;
+  int32 message_id = 3;
+  string user_name = 4;
 
 }
