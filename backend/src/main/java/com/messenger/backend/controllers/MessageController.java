@@ -1,19 +1,13 @@
 package com.messenger.backend.controllers;
 
 import com.messenger.backend.entity.MessageEntity;
-import com.messenger.backend.entity.UserEntity;
 import com.messenger.backend.exception.MessegeNotSentException;
-import com.messenger.backend.exception.UserCreateFailed;
-import com.messenger.backend.exception.UserNotFoundException;
 import com.messenger.backend.services.MessageService;
-import com.messenger.backend.services.UserService;
 import com.messenger.common.dto.MessageDto;
-import com.messenger.common.dto.UserDto;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,7 +45,7 @@ public class MessageController {
     public List<MessageDto> getMessages(@RequestParam(value = "room") Integer id) {
         log.info("/getMessages?room={}", id);
         List<MessageDto> result = new ArrayList<>();
-        List<MessageEntity> messages = messageService.getByRoomName(id);
+        List<MessageEntity> messages = messageService.getByRoomId(id);
         if (messages.size() > 0) {
             for (MessageEntity message : messages) {
                 MessageDto messageDto = modelMapper.map(message, MessageDto.class);
