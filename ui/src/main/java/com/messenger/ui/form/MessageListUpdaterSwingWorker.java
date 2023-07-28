@@ -12,7 +12,8 @@ import java.util.List;
 public class MessageListUpdaterSwingWorker extends SwingWorker<Object, Object> {
     private static final Logger LOG = LoggerFactory.getLogger(MessageListUpdaterSwingWorker.class);
     private final StartForm form;
-    private final UiAction uiAction;    private List<MessageDto> updatedMessageList;
+    private final UiAction uiAction;
+    private List<MessageDto> updatedMessageList;
     private final List<MessageDto> currentRoomMessageList;
 
     public MessageListUpdaterSwingWorker(StartForm form, List<MessageDto> currentRoomMessageList) {

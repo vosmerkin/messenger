@@ -12,8 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -72,63 +70,19 @@ public class StartForm {
 
     public StartForm() {
         ActionListener sendButtonActionListener = new SendButtonActionListener(this);
-        messageTextField.addActionListener(sendButtonActionListener);
         sendButton.addActionListener(sendButtonActionListener);
-        messageTextField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                changeSendButtonEnabledState();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                changeSendButtonEnabledState();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                changeSendButtonEnabledState();
-            }
-        });
+        messageTextField.addActionListener(sendButtonActionListener);
+        messageTextField.getDocument().addDocumentListener(new MessageTextFieldDocumentListener(this));
 
         ActionListener userLoginButtonActionListener = new UserLoginButtonActionListener(this);
         userLoginButton.addActionListener(userLoginButtonActionListener);
         userNameTextField.addActionListener(userLoginButtonActionListener);
-        userNameTextField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                changeUserLoginButtonEnabledState();
-            }
+        userNameTextField.getDocument().addDocumentListener(new userNameTextFieldDocumentListener(this));
 
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                changeUserLoginButtonEnabledState();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                changeUserLoginButtonEnabledState();
-            }
-        });
         ActionListener roomCreateConnectActionListener = new RoomCreateConnectActionListener(this);
         roomCreateConnectButton.addActionListener(roomCreateConnectActionListener);
         roomNameTextField.addActionListener(roomCreateConnectActionListener);
-        roomNameTextField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                changeRoomCreateConnectButtonEnabledState();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                changeRoomCreateConnectButtonEnabledState();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                changeRoomCreateConnectButtonEnabledState();
-            }
-        });
+        roomNameTextField.getDocument().addDocumentListener(new RoomNameTextFieldDocumentListener(this));
 
         changeUserLoginButtonEnabledState();
         changeRoomCreateConnectButtonEnabledState();
@@ -140,7 +94,7 @@ public class StartForm {
 
     }
 
-    private void changeUserLoginButtonEnabledState() {
+    void changeUserLoginButtonEnabledState() {
         userLoginButton.setEnabled(!userNameTextField.getText().isBlank());
     }
 
