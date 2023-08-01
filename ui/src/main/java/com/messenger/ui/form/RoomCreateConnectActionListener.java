@@ -22,10 +22,12 @@ public class RoomCreateConnectActionListener implements ActionListener {
     private final JButton roomCreateConnectButton;
     private final JTextField roomNameTextField;
     private final JList roomUserList;
-    private final ScheduledExecutorService scheduler;
-    private ScheduledFuture<?> messageListUpdaterHandle;
+//    private final ScheduledExecutorService scheduler;
+//    private ScheduledFuture<?> messageListUpdaterHandle;
     private final DefaultListModel<String> roomUserListModel;
     private final List<MessageDto> currentRoomMessageList;
+
+    private MessageListUpdaterRest messageListUpdater;
 
     public RoomCreateConnectActionListener(StartForm form) {
         this.form = form;
@@ -34,9 +36,9 @@ public class RoomCreateConnectActionListener implements ActionListener {
         roomNameTextField = form.getRoomNameTextField();
         roomUserListModel = form.getRoomUserListModel();
         roomUserList = form.getRoomUserList();
-        scheduler = form.getScheduler();
-        messageListUpdaterHandle = form.getMessageListUpdaterHandle();
-        currentRoomMessageList=form.getCurrentRoomMessageList();
+//        scheduler = form.getScheduler();
+//        messageListUpdaterHandle = form.getMessageListUpdaterHandle();
+        currentRoomMessageList = form.getCurrentRoomMessageList();
     }
 
     @Override
@@ -61,7 +63,16 @@ public class RoomCreateConnectActionListener implements ActionListener {
                         //clear controls - usersList,msgList, etc
                         roomUserListModel.removeAllElements();
                         currentRoomMessageList.clear();
-                        if (messageListUpdaterHandle != null) messageListUpdaterHandle.cancel(true);
+
+                        LOG.info("STOP message updating");
+                        if (messageListUpdater != null) {
+                            messageListUpdater.stopUpdating();
+                            messageListUpdater = null;
+                        }
+//                        if (messageListUpdaterHandle != null) {
+//                            messageListUpdaterHandle.cancel(true);
+//                            messageListUpdaterHandle = null;
+//                        }
                     }
                 } else {
                     String roomName = roomNameTextField.getText();
@@ -74,15 +85,17 @@ public class RoomCreateConnectActionListener implements ActionListener {
                         roomUserListModel.addAll(currentRoom.getRoomUserNames());
                         roomUserList.setModel(roomUserListModel);
 //                                fillMessagesFromHistory
-                        LOG.info("creating and scheduling Runnable for updating messages");
-                        final Runnable messageListUpdater = new Runnable() {
-                            public void run() {
-                                MessageListUpdaterSwingWorker messageListWorker = new MessageListUpdaterSwingWorker(form, currentRoomMessageList);
-                                messageListWorker.execute();
-                            }
-                        };
-                        messageListUpdaterHandle =
-                                scheduler.scheduleAtFixedRate(messageListUpdater, 5, 20, SECONDS);
+                        LOG.info("Start message updating");
+                        messageListUpdater = new MessageListUpdaterRest(form, currentRoomMessageList);
+                        messageListUpdater.startUpdating();
+//                        final Runnable messageListUpdaterRunnuble = new Runnable() {
+//                            public void run() {
+//                                MessageListUpdaterSwingWorker messageListWorker = new MessageListUpdaterSwingWorker(form, currentRoomMessageList);
+//                                messageListWorker.execute();
+//                            }
+//                        };
+//                        messageListUpdaterHandle =
+//                                scheduler.scheduleAtFixedRate(messageListUpdaterRunnuble, 5, 20, SECONDS);
                     }
                 }
                 roomCreateConnectButton.setEnabled(true);
