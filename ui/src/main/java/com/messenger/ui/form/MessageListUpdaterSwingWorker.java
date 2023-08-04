@@ -16,10 +16,10 @@ public class MessageListUpdaterSwingWorker extends SwingWorker<Object, Object> {
     private List<MessageDto> updatedMessageList;
     private final List<MessageDto> currentRoomMessageList;
 
-    public MessageListUpdaterSwingWorker(StartForm form, List<MessageDto> currentRoomMessageList) {
+    public MessageListUpdaterSwingWorker(StartForm form) {
         this.form = form;
         uiAction = form.getUiAction();
-        this.currentRoomMessageList= currentRoomMessageList;
+        this.currentRoomMessageList= form.getCurrentRoomMessageList();
     }
 
     @Override

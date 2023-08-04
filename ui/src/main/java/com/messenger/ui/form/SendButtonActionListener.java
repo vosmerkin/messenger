@@ -28,13 +28,12 @@ public class SendButtonActionListener implements ActionListener {
                 var currentUser = form.getCurrentUser();
                 var currentRoom = form.getCurrentRoom();
                 var messageTextField = form.getMessageTextField();
-                var currentRoomMessageList = form.getCurrentRoomMessageList();
                 if (form.getCurrentUser() != null && form.getCurrentRoom() != null) {
                     MessageDto message = new MessageDto(null, Date.from(Instant.now()), messageTextField.getText(), currentRoom, currentUser);
                     uiAction.sendMessage(message);
 
                     LOG.info("run messageListUpdaterSwingWorker to update messages immediately after sending");
-                    MessageListUpdaterSwingWorker messageListWorker = new MessageListUpdaterSwingWorker(form, currentRoomMessageList);
+                    MessageListUpdaterSwingWorker messageListWorker = new MessageListUpdaterSwingWorker(form);
                     messageListWorker.execute();
 
                     messageTextField.setText("");

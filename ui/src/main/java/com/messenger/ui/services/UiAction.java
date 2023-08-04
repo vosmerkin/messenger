@@ -165,7 +165,7 @@ public class UiAction {
     public List<MessageDto> requestRoomMessages(Integer roomId) {
         List<MessageDto> messages = new ArrayList<>();
         try {
-            messages = httpBackendClient.getMessages(roomId);
+            messages = httpBackendClient.getMessagesbyRoomId(roomId);
         } catch (IOException ex) {
             log.debug("IOException to remote address {}", ex);
             JOptionPane.showMessageDialog(null,
@@ -176,5 +176,21 @@ public class UiAction {
             log.debug("InterruptedException {}", ex);
         }
         return messages;
+    }
+
+    public MessageDto requestMessage(Integer messageId) {
+        MessageDto message=MessageDto.EMPTY_ENTITY;
+        try {
+            message = httpBackendClient.getMessageById(messageId);
+        } catch (IOException ex) {
+            log.debug("IOException to remote address {}", ex);
+            JOptionPane.showMessageDialog(null,
+                    "Connection problem. Try again later ",
+                    "HttpClient Error",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (InterruptedException ex) {
+            log.debug("InterruptedException {}", ex);
+        }
+        return message;
     }
 }

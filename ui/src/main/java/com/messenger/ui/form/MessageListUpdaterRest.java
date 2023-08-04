@@ -16,13 +16,13 @@ public class MessageListUpdaterRest {
     private ScheduledFuture<?> messageListUpdaterHandle;
     private final ScheduledExecutorService scheduler;
 
-    public MessageListUpdaterRest(StartForm form, List<MessageDto> currentRoomMessageList) {
+    public MessageListUpdaterRest(StartForm form) {
         LOG.info("creating and scheduling Runnable for updating messages");
         messageListUpdaterHandle = form.getMessageListUpdaterHandle();
         scheduler = form.getScheduler();
         messageListUpdaterRunnable = new Runnable() {
             public void run() {
-                MessageListUpdaterSwingWorker messageListWorker = new MessageListUpdaterSwingWorker(form, currentRoomMessageList);
+                MessageListUpdaterSwingWorker messageListWorker = new MessageListUpdaterSwingWorker(form);
                 messageListWorker.execute();
             }
         };

@@ -86,7 +86,7 @@ public class RoomCreateConnectActionListener implements ActionListener {
                         roomUserList.setModel(roomUserListModel);
 //                                fillMessagesFromHistory
                         LOG.info("Start message updating");
-                        messageListUpdater = new MessageListUpdaterRest(form, currentRoomMessageList);
+                        messageListUpdater = new MessageListUpdaterRest(form);
                         messageListUpdater.startUpdating();
 //                        final Runnable messageListUpdaterRunnuble = new Runnable() {
 //                            public void run() {

@@ -1,7 +1,6 @@
 package com.messenger.ui.services;
 
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.messenger.common.dto.*;
 import com.messenger.ui.exceptions.HttpClientIOException;
 import com.messenger.ui.exceptions.RoomNotFoundException;
@@ -16,7 +15,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -34,7 +32,8 @@ public class HttpBackendClient {
     private final String roomRequestAddress;
     private final String roomUpdateUsersListAddress;
     private final String messageSendAddress;
-    private final String messagesGetAddress;
+    private final String messagesByRoomIdGetAddress;
+    private final String messageByIdGetAddress;
 
 
     public HttpBackendClient() {
@@ -47,7 +46,8 @@ public class HttpBackendClient {
         roomRequestAddress = backendHost + PropertyManager.getProperty("backend.room_request");
         roomUpdateUsersListAddress = backendHost + PropertyManager.getProperty("backend.room_update_users");
         messageSendAddress = backendHost + PropertyManager.getProperty("backend.message_send");
-        messagesGetAddress = backendHost + PropertyManager.getProperty("backend.messages_get");
+        messagesByRoomIdGetAddress = backendHost + PropertyManager.getProperty("backend.messages_get");
+        messageByIdGetAddress = backendHost + PropertyManager.getProperty("backend.message_get");
     }
 
 
@@ -166,8 +166,8 @@ public class HttpBackendClient {
         }
     }
 
-    public List<MessageDto> getMessages(Integer roomId) throws HttpClientIOException, InterruptedException {
-        var url = messagesGetAddress + roomId;
+    public List<MessageDto> getMessagesbyRoomId(Integer roomId) throws HttpClientIOException, InterruptedException {
+        var url = messagesByRoomIdGetAddress + roomId;
         log.debug("Requesting all messages for roomId: {}, url address: {}", roomId, url);
         var request = HttpRequest.newBuilder(URI.create(url))
                 .header(CONTENT_TYPE, APPLICATION_JSON)
@@ -176,7 +176,7 @@ public class HttpBackendClient {
         HttpResponse<String> response;
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException  e) {
+        } catch (IOException e) {
             throw new HttpClientIOException("IOException to remote address " + url);
         }
         if (response.statusCode() > 399) {
@@ -185,5 +185,25 @@ public class HttpBackendClient {
         MessageDto[] messagesArray = JsonMapper.fromJson(response.body(), MessageDto[].class);
         return new ArrayList<>(Arrays.asList(messagesArray));
 
+    }
+
+    public MessageDto getMessageById(Integer messageId) throws IOException, InterruptedException {
+        var url = messageByIdGetAddress + messageId;
+        log.debug("Requesting message by Id: {}, url address: {}", messageId, url);
+        var request = HttpRequest.newBuilder(URI.create(url))
+                .header(CONTENT_TYPE, APPLICATION_JSON)
+                .GET()
+                .build();
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException e) {
+            throw new HttpClientIOException("IOException to remote address " + url);
+        }
+        if (response.statusCode() > 399) {
+            throw new HttpClientIOException("IOException to remote address " + url);
+        }
+        MessageDto message = JsonMapper.fromJson(response.body(), MessageDto.class);
+        return message;
     }
 }
