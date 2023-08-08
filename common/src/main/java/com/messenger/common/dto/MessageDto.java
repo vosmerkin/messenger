@@ -1,6 +1,9 @@
 package com.messenger.common.dto;
 
+import grpc_generated.MessageProto;
+
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Objects;
 
@@ -91,4 +94,15 @@ public class MessageDto implements Serializable {
                 ", user=" + user.toString() +
                 '}';
     }
+
+    public static MessageDto fromProto(MessageProto messageProto){
+//        public MessageDto(Integer id, Date messageDateTime, String messageText, RoomDto room, UserDto user)
+        if (messageProto == null) return MessageDto.EMPTY_ENTITY;
+        return new MessageDto(messageProto.getMessageId(),
+                Date.from(Instant.ofEpochSecond(messageProto.getMessageDateTime().getSeconds(), messageProto.getMessageDateTime().getNanos())),
+                messageProto.getMessage(),
+                RoomDto.fromProto(messageProto.getRoomProto()),
+                UserDto.fromProto(messageProto.getUserProto()));
+    }
+
 }

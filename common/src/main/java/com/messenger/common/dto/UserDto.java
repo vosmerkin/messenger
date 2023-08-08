@@ -1,10 +1,13 @@
 package com.messenger.common.dto;
 
+import com.google.protobuf.Timestamp;
+
+import grpc_generated.UserProto;
+
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Set;
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class UserDto implements Serializable {
 
@@ -72,5 +75,17 @@ public class UserDto implements Serializable {
                 ", lastActionDateTime=" + lastActionDateTime +
                 ", activeStatus=" + activeStatus +
                 '}';
+    }
+
+    public static UserDto fromProto(UserProto userProto) {
+//        (Integer id, String userName, Date lastActionDateTime, Boolean activeStatus, Set<UserDto> contactList)
+        if (userProto == null) return UserDto.EMPTY_ENTITY;
+
+//        if (userProto.getContactListList()!=null)
+        return new UserDto(userProto.getUserId(),
+                userProto.getUserName(),
+                Date.from(Instant.ofEpochSecond(userProto.getLastActionDateTime().getSeconds(), userProto.getLastActionDateTime().getNanos())),
+                userProto.getActiveStatus(),
+                new HashSet<>(userProto.getContactListList().stream().map(UserDto::fromProto).collect(Collectors.toSet())));
     }
 }

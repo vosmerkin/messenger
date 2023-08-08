@@ -1,7 +1,11 @@
 package com.messenger.common.dto;
 
+
+import grpc_generated.RoomProto;
+
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class RoomDto implements Serializable {
 
@@ -79,6 +83,13 @@ public class RoomDto implements Serializable {
                 "id=" + id +
                 ", roomName='" + roomName + '\'' +
                 '}';
+    }
+
+    public static RoomDto fromProto(RoomProto roomProto){
+        if (roomProto == null) return RoomDto.EMPTY_ENTITY;
+        return new RoomDto(roomProto.getRoomId(),
+                            roomProto.getRoomName(),
+                            new HashSet<>(roomProto.getRoomUsersList().stream().map(UserDto::fromProto).collect(Collectors.toSet())));
     }
 
 }
