@@ -1,7 +1,9 @@
 package com.messenger.backend.entity;
 
+import com.google.protobuf.Timestamp;
 import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
+import grpc_generated.MessageProto;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -40,6 +42,7 @@ public class MessageEntity {
         this.room = room;
         this.user = user;
     }
+
 
     public Integer getId() {
         return id;
@@ -103,5 +106,27 @@ public class MessageEntity {
                 ", room=" + room.getRoomName() +
                 ", user=" + user.getUserName() +
                 '}';
+    }
+    public static MessageProto toProto(MessageEntity message) {
+        if (message==null) return null;
+//        int32 message_id = 1;
+//        google.protobuf.Timestamp message_date_time = 2;
+//        string message = 3;
+//        RoomProto room_proto = 4;
+//        UserProto user_proto = 5;
+//        int32 user_id = 6;
+//        string user_name = 7;
+        return MessageProto.newBuilder()
+                .setMessageId(message.getId())
+                .setMessageDateTime(Timestamp.newBuilder()
+                        .setSeconds(message.getMessageDateTime().toInstant().getEpochSecond())
+                        .setNanos(message.getMessageDateTime().toInstant().getNano())
+                        .build())
+                .setMessage(message.getMessageText())
+                .setRoomProto(RoomEntity.toProto(message.getRoom()))
+                .setUserProto(UserEntity.toProto(message.getUser()))
+                .setUserId(message.getUser().getId())
+                .setUserName(message.getUser().getUserName())
+                .build();
     }
 }

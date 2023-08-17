@@ -1,5 +1,8 @@
 package com.messenger.backend.entity;
 
+import com.google.protobuf.Timestamp;
+import grpc_generated.UserProto;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,10 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "tbl_users")
@@ -58,6 +59,7 @@ public class UserEntity {
     public UserEntity(Integer id) {
         this.id = id;
     }
+
 
     public void setId(Integer id) {
         this.id = id;
@@ -131,5 +133,25 @@ public class UserEntity {
                 ", contactList=" + contactList +
                 ", rooms=" + rooms +
                 '}';
+    }
+
+    public static UserProto toProto(UserEntity user) {
+//        message UserProto {
+//            int32 user_id = 1;
+//            string user_name = 2;
+//            google.protobuf.Timestamp last_action_date_time = 3;
+//            bool active_status = 4;
+//            repeated UserProto contact_list = 5;
+//        }
+        if (user == null) return null;
+        return UserProto.newBuilder()
+                .setUserId(user.getId())
+                .setUserName(user.getUserName())
+                .setLastActionDateTime(Timestamp.newBuilder()
+                        .setSeconds(user.getLastActionDateTime().toInstant().getEpochSecond())
+                        .setNanos(user.getLastActionDateTime().toInstant().getNano())
+                        .build())
+                .setActiveStatus(user.getActiveStatus())
+                .addAllContactList(new HashSet<>(user.getContactList().stream().map(UserEntity::toProto).collect(Collectors.toSet()))).build();
     }
 }
