@@ -1,14 +1,7 @@
 package com.messenger.backend.grpc;
 
-import io.grpc.Server;
-import io.grpc.ServerBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
-
-public class GrpcServer {
+public class GrpcServer1 {
 //    private static final Logger log = LoggerFactory.getLogger(GrpcServer.class);
 //    private Server server;
 //

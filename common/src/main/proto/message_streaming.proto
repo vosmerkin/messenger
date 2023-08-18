@@ -1,5 +1,5 @@
 syntax = "proto3";
-
+import "google/protobuf/timestamp.proto";
 
 option java_multiple_files = true;
 option java_package = "grpc_generated";
@@ -13,10 +13,39 @@ message RoomRequest {
   int32 room_id = 2;
 }
 
-message RoomMessagesResponse {
+message UserProto {
   int32 user_id = 1;
   string user_name = 2;
-  int32 message_id = 3;
-  string message = 4;
-
+  google.protobuf.Timestamp last_action_date_time = 3;
+  bool active_status = 4;
+  repeated UserProto contact_list = 5;
 }
+
+message RoomProto {
+  int32 room_id = 1;
+  string room_name = 2;
+  repeated UserProto room_users = 3;
+}
+
+message MessageProto{
+  int32 message_id = 1;
+  google.protobuf.Timestamp message_date_time = 2;
+  string message = 3;
+  RoomProto room_proto = 4;
+  UserProto user_proto = 5;
+  int32 user_id = 6;
+  string user_name = 7;
+}
+message RoomMessagesResponse {
+  int32 message_id = 1;
+  google.protobuf.Timestamp message_date_time = 2;
+  string message = 3;
+  int32 room_id = 4;
+  int32 user_id = 5;
+  string user_name = 6;
+  MessageProto messageProto = 7;
+}
+
+
+
+

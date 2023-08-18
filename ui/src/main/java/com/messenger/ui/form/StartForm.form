@@ -96,14 +96,25 @@
           <text value="RoomName"/>
         </properties>
       </component>
-      <component id="49db3" class="javax.swing.JTable" binding="roomChatTable">
+      <scrollpane id="a1c93" binding="roomChatTableScrollPane">
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="50"/>
-          </grid>
+          <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties/>
-      </component>
+        <properties>
+          <autoscrolls value="true"/>
+          <visible value="true"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <component id="49db3" class="javax.swing.JTable" binding="roomChatTable">
+            <constraints/>
+            <properties>
+              <preferredScrollableViewportSize width="450" height="150"/>
+              <showHorizontalLines value="false"/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
     </children>
   </grid>
 </form>

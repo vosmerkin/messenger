@@ -32,9 +32,9 @@ public class SendButtonActionListener implements ActionListener {
                     MessageDto message = new MessageDto(null, Date.from(Instant.now()), messageTextField.getText(), currentRoom, currentUser);
                     uiAction.sendMessage(message);
 
-                    LOG.info("run messageListUpdaterSwingWorker to update messages immediately after sending");
-                    MessageListUpdaterSwingWorker messageListWorker = new MessageListUpdaterSwingWorker(form);
-                    messageListWorker.execute();
+//                    LOG.info("run messageListUpdaterSwingWorker to update messages immediately after sending");
+//                    MessageListUpdaterSwingWorker messageListWorker = new MessageListUpdaterSwingWorker(form);
+//                    messageListWorker.execute();
 
                     messageTextField.setText("");
                 }

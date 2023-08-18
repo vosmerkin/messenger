@@ -18,7 +18,7 @@ public class RoomEntity {
     @Column(name = "room_name")
     private String roomName;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "tbl_room_users",
             joinColumns = @JoinColumn(name = "room_id"),

@@ -1,69 +1,56 @@
 package com.messenger.ui.grpc;
 
 import com.messenger.common.dto.MessageDto;
-import com.messenger.common.dto.RoomDto;
-import com.messenger.common.dto.UserDto;
 import com.messenger.ui.form.StartForm;
-import com.messenger.ui.services.Addresses;
-import com.messenger.ui.services.UiAction;
+import com.messenger.ui.services.PropertyManager;
 import grpc_generated.RoomMessagesResponse;
 import grpc_generated.RoomMessagesStreamingServiceGrpc;
 import grpc_generated.RoomRequest;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.text.SimpleDateFormat;
 import java.util.Iterator;
-import java.util.List;
 
 public class GrpcClient {
-    private String address = Addresses.GRPC_ADDRESS;
-    private ManagedChannel channel;
-    private final StartForm form;
-    private final List<MessageDto> currentRoomMessageList;
+    private static final Logger LOG = LoggerFactory.getLogger(GrpcClient.class);
+    private final String grpcHost;
+    private final ManagedChannel channel;
     private final RoomMessagesStreamingServiceGrpc.RoomMessagesStreamingServiceBlockingStub stub;
-    private RoomRequest request;
-    private final UiAction uiAction;
+    private final StartForm form;
+
 
     public GrpcClient(StartForm form) {
         this.form = form;
-        channel = ManagedChannelBuilder.forTarget(address)
+        grpcHost = PropertyManager.getProperty("grpc.host");
+        LOG.info("backend.host {}", grpcHost);
+        channel = ManagedChannelBuilder
+                .forTarget(grpcHost)
                 .usePlaintext()
                 .build();
         stub = RoomMessagesStreamingServiceGrpc.newBlockingStub(channel);
-        this.currentRoomMessageList = form.getCurrentRoomMessageList();
-        this.uiAction = form.getUiAction();
+        LOG.debug("{} instance created", this);
     }
 
-    public void requestStreaming(UserDto user, RoomDto room) {
-        request = RoomRequest.newBuilder()
-                .setUserId(user.getId())
-                .setRoomId(room.getId())
+    public void stopUpdating() {
+        LOG.info("Shutting down");
+        channel.shutdown();
+    }
+
+    public void startUpdating() {
+        LOG.info("GrpcClient, start updating");
+        RoomRequest request = RoomRequest.newBuilder()
+                .setUserId(form.getCurrentUser().getId())
+                .setRoomId(form.getCurrentRoom().getId())
                 .build();
         Iterator<RoomMessagesResponse> messagesResponseIterator = stub.messageStreaming(request);
-        var messageListModel = form.getMessageListModel();
-        RoomMessagesResponse message;
-
-        System.out.println("Request sent");
+        LOG.info("Request sent {}", request);
+        RoomMessagesResponse response;
         while (messagesResponseIterator.hasNext()) {
-            message = messagesResponseIterator.next();
-
-            MessageDto messageDto = uiAction.requestMessage(message.getMessageId());
-            currentRoomMessageList.add(messageDto);
-            messageListModel.addRow(
-                    new String[]{message.getUserName(),
-                            new SimpleDateFormat("HH:mm:ss").format(messageDto.getMessageDateTime()),
-                            message.getMessage()});
+            response = messagesResponseIterator.next();
+            LOG.info("Received new message {}", response.getMessageProto());
+            form.addMessage(MessageDto.fromProto(response.getMessageProto()));
         }
-
-        //TODO include datetime to proto
-
-
     }
-
-    public void stopStreaming() {
-        channel.shutdownNow();
-    }
-
-
 }

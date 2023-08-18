@@ -15,13 +15,10 @@ import java.util.List;
 public class MessageService {
     @Autowired
     private final MessageRepository messageRepository;
-
     @Autowired
     private final UserRepository userRepository;
-
     @Autowired
     private final RoomRepository roomRepository;
-
     @Autowired
     private final RoomMessagesStreamingServiceImplBaseImpl messagesService;
 
@@ -36,10 +33,13 @@ public class MessageService {
         MessageEntity result = MessageEntity.EMPTY_ENTITY;
         if (message != null) {
             if (userRepository.existsById(message.getUser().getId()) && roomRepository.existsById(message.getRoom().getId())) {
+                message.setUser(userRepository.findAllById(message.getUser().getId()));
+                message.setRoom(roomRepository.findAllById(message.getRoom().getId()));
                 result = messageRepository.save(message);
             }
             //broadcast to all room users
             messagesService.BroadcastNewMessage(message);
+
         }
         return result;
     }

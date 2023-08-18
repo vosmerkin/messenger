@@ -31,6 +31,7 @@ public class MessageDto implements Serializable {
         this.user = user;
     }
 
+
     public Integer getId() {
         return id;
     }
@@ -104,5 +105,6 @@ public class MessageDto implements Serializable {
                 RoomDto.fromProto(messageProto.getRoomProto()),
                 UserDto.fromProto(messageProto.getUserProto()));
     }
+
 
 }

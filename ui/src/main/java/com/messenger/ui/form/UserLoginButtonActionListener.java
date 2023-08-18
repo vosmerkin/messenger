@@ -14,6 +14,7 @@ public class UserLoginButtonActionListener implements ActionListener {
     private final StartForm form;
     private final UiAction uiAction;
     private final JButton userLoginButton;
+    private final JTextField roomNameTextField;
     private final JTextField userNameTextField;
     private final DefaultListModel<UserDto> contactListModel;
 
@@ -21,6 +22,7 @@ public class UserLoginButtonActionListener implements ActionListener {
         this.form = form;
         uiAction = form.getUiAction();
         userLoginButton = form.getUserLoginButton();
+        roomNameTextField = form.getRoomNameTextField();
         userNameTextField = form.getUserNameTextField();
         contactListModel = form.getContactListModel();
     }
@@ -50,6 +52,7 @@ public class UserLoginButtonActionListener implements ActionListener {
                         userLoginButton.setText("User Logoff");
                         userNameTextField.setEnabled(false);
                         form.setUserLoggedInStatus(userLoggedInStatus = true);
+                        roomNameTextField.grabFocus();
 //                                contactListModel.addAll(currentUser.getContactList());
 //                                contactList.setModel(contactListModel);
                         //fill Contact List from UserEntity

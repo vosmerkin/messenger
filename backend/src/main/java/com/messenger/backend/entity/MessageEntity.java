@@ -4,6 +4,7 @@ import com.google.protobuf.Timestamp;
 import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
 import grpc_generated.MessageProto;
+import grpc_generated.RoomMessagesResponse;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -127,6 +128,21 @@ public class MessageEntity {
                 .setUserProto(UserEntity.toProto(message.getUser()))
                 .setUserId(message.getUser().getId())
                 .setUserName(message.getUser().getUserName())
+                .build();
+    }
+
+    public RoomMessagesResponse toRoomMessagesResponse() {
+        return RoomMessagesResponse.newBuilder()
+                .setMessageId(this.getId())
+                .setMessageDateTime(Timestamp.newBuilder()
+                        .setSeconds(this.getMessageDateTime().toInstant().getEpochSecond())
+                        .setNanos(this.getMessageDateTime().toInstant().getNano())
+                        .build())
+                .setMessage(this.getMessageText())
+                .setRoomId(this.getRoom().getId())
+                .setUserId(this.getUser().getId())
+                .setUserName(this.getUser().getUserName())
+                .setMessageProto(MessageEntity.toProto(this))
                 .build();
     }
 }

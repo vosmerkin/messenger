@@ -19,14 +19,17 @@ import java.util.List;
 public class MessageController {
     private static final Logger log = LoggerFactory.getLogger(MessageController.class);
 
-    private final MessageService messageService;
-    private final ModelMapper modelMapper;
 
     @Autowired
-    public MessageController(MessageService messageService, ModelMapper modelMapper) {
-        this.messageService = messageService;
-        this.modelMapper = modelMapper;
-    }
+    private  MessageService messageService;
+    @Autowired
+    private ModelMapper modelMapper = new ModelMapper();
+
+//    @Autowired
+//    public MessageController(MessageService messageService, ModelMapper modelMapper) {
+//        this.messageService = messageService;
+//        this.modelMapper = modelMapper;
+//    }
 
     @PutMapping(value = "/sendMessage", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void sendMessage(@RequestBody MessageDto messageDto) {

@@ -3,15 +3,7 @@ package com.messenger.backend.entity;
 import com.google.protobuf.Timestamp;
 import grpc_generated.UserProto;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -130,8 +122,7 @@ public class UserEntity {
                 ", userName='" + userName + '\'' +
                 ", lastActionDateTime=" + lastActionDateTime +
                 ", activeStatus=" + activeStatus +
-                ", contactList=" + contactList +
-                ", rooms=" + rooms +
+                ", contactList=" + contactList.size() + " contacts" +
                 '}';
     }
 

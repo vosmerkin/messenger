@@ -38,11 +38,12 @@ public class MessageListUpdaterSwingWorker extends SwingWorker<Object, Object> {
         updatedMessageList.removeAll(currentRoomMessageList);
         if (updatedMessageList.size() > 0) {
             for (MessageDto message : updatedMessageList) {
-                messageListModel.addRow(
-                        new String[]{message.getUser().getUserName(),
-                                new SimpleDateFormat("HH:mm:ss").format(message.getMessageDateTime()),
-                                message.getMessageText()});
-                currentRoomMessageList.add(message);
+                form.addMessage(message);
+//                messageListModel.addRow(
+//                        new String[]{message.getUser().getUserName(),
+//                                new SimpleDateFormat("HH:mm:ss").format(message.getMessageDateTime()),
+//                                message.getMessageText()});
+//                currentRoomMessageList.add(message);
             }
         }
     }

@@ -22,10 +22,11 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
     implementation project(':common')
     implementation 'io.grpc:grpc-api:1.54.1'
-    compileOnly  'com.google.protobuf:protobuf-java:3.23.3'
-    implementation 'io.grpc:grpc-stub:1.56.0'
+    implementation   'com.google.protobuf:protobuf-java:3.23.3'
+    implementation 'io.grpc:grpc-stub:1.56.1'
 
-    compileOnly 'com.intellij:forms_rt:7.0.3'
+
+
     compileOnly 'org.slf4j:slf4j-api:1.7.36'
 
     compileOnly 'org.projectlombok:lombok:1.18.24'

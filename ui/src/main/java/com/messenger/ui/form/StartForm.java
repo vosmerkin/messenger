@@ -15,6 +15,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
@@ -58,6 +60,7 @@ public class StartForm {
     @Getter
     private JTextField roomNameTextField;
     private JTable roomChatTable;
+    private JScrollPane roomChatTableScrollPane;
     @Getter
     @Setter
     private boolean userLoggedInStatus;
@@ -92,6 +95,8 @@ public class StartForm {
         roomChatTable.getColumnModel().getColumn(1).setPreferredWidth((int) (roomChatTable.getWidth() * 0.2));
         roomChatTable.getColumnModel().getColumn(2).setWidth((int) (roomChatTable.getWidth() * 0.6));
 
+//        roomChatTableScrollPane = new JScrollPane(roomChatTable);
+        roomChatTableScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
     }
 
     void changeUserLoginButtonEnabledState() {
@@ -163,7 +168,8 @@ public class StartForm {
         label2.setText("RoomName");
         mainPanel.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         roomChatTable = new JTable();
-        mainPanel.add(roomChatTable, new GridConstraints(2, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        roomChatTableScrollPane = new JScrollPane(roomChatTable);
+        mainPanel.add(roomChatTableScrollPane,  new GridConstraints(2, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
     }
 
     /**
@@ -179,5 +185,13 @@ public class StartForm {
 
     }
 
-
+    public void addMessage(MessageDto message) {
+        LOG.info("Adding message {}", message.getMessageText());
+        messageListModel.addRow(
+                new String[]{message.getUser().getUserName(),
+                        new SimpleDateFormat("HH:mm:ss").format(message.getMessageDateTime()),
+                        message.getMessageText()});
+        currentRoomMessageList.add(message);
+        roomChatTableScrollPane.getVerticalScrollBar().setValue(roomChatTableScrollPane.getVerticalScrollBar().getMaximum());
+    }
 }

@@ -2,6 +2,7 @@ package com.messenger.ui.form;
 
 import com.messenger.common.dto.MessageDto;
 import com.messenger.common.dto.RoomDto;
+import com.messenger.ui.grpc.GrpcClient;
 import com.messenger.ui.services.UiAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,10 +11,6 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class RoomCreateConnectActionListener implements ActionListener {
     private static final Logger LOG = LoggerFactory.getLogger(RoomCreateConnectActionListener.class);
@@ -22,12 +19,13 @@ public class RoomCreateConnectActionListener implements ActionListener {
     private final JButton roomCreateConnectButton;
     private final JTextField roomNameTextField;
     private final JList roomUserList;
-//    private final ScheduledExecutorService scheduler;
+    //    private final ScheduledExecutorService scheduler;
 //    private ScheduledFuture<?> messageListUpdaterHandle;
     private final DefaultListModel<String> roomUserListModel;
     private final List<MessageDto> currentRoomMessageList;
 
-    private MessageListUpdaterRest messageListUpdater;
+//    private final MessageListUpdaterRest messageListUpdater;
+    private final GrpcClient messageListUpdater;
 
     public RoomCreateConnectActionListener(StartForm form) {
         this.form = form;
@@ -39,6 +37,8 @@ public class RoomCreateConnectActionListener implements ActionListener {
 //        scheduler = form.getScheduler();
 //        messageListUpdaterHandle = form.getMessageListUpdaterHandle();
         currentRoomMessageList = form.getCurrentRoomMessageList();
+//        messageListUpdater = new MessageListUpdaterRest(form);
+        messageListUpdater = new GrpcClient(form);
     }
 
     @Override
@@ -46,6 +46,7 @@ public class RoomCreateConnectActionListener implements ActionListener {
         new SwingWorker() {
             @Override
             protected Object doInBackground() throws Exception {
+                LOG.info("RoomCreateConnectButton clicked");
                 var roomConnectedStatus = form.isRoomConnectedStatus();
                 var currentUser = form.getCurrentUser();
                 var currentRoom = form.getCurrentRoom();
@@ -65,14 +66,16 @@ public class RoomCreateConnectActionListener implements ActionListener {
                         currentRoomMessageList.clear();
 
                         LOG.info("STOP message updating");
-                        if (messageListUpdater != null) {
-                            messageListUpdater.stopUpdating();
-                            messageListUpdater = null;
-                        }
+//                        if (messageListUpdater != null) {
+                        messageListUpdater.stopUpdating();
+//                            messageListUpdater = null;
+//                        }
 //                        if (messageListUpdaterHandle != null) {
 //                            messageListUpdaterHandle.cancel(true);
 //                            messageListUpdaterHandle = null;
 //                        }
+                        roomCreateConnectButton.setEnabled(true);
+                        form.changeSendButtonEnabledState();
                     }
                 } else {
                     String roomName = roomNameTextField.getText();
@@ -84,9 +87,11 @@ public class RoomCreateConnectActionListener implements ActionListener {
 //                                fillRoomUserList
                         roomUserListModel.addAll(currentRoom.getRoomUserNames());
                         roomUserList.setModel(roomUserListModel);
+                        roomCreateConnectButton.setEnabled(true);
+                        form.changeSendButtonEnabledState();
 //                                fillMessagesFromHistory
                         LOG.info("Start message updating");
-                        messageListUpdater = new MessageListUpdaterRest(form);
+//                        messageListUpdater = new MessageListUpdaterRest(form);
                         messageListUpdater.startUpdating();
 //                        final Runnable messageListUpdaterRunnuble = new Runnable() {
 //                            public void run() {
