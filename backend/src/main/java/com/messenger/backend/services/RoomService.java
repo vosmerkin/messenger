@@ -11,9 +11,9 @@ import java.util.Date;
 
 @Service
 public class RoomService {
-    @Autowired
     private final RoomRepository roomRepository;
 
+    @Autowired
     public RoomService(RoomRepository roomRepository) {
         this.roomRepository = roomRepository;
     }

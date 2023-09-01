@@ -23,10 +23,14 @@ import org.springframework.web.bind.annotation.*;
 public class RoomController {
     private static final Logger log = LoggerFactory.getLogger(RoomController.class);
 
+    private final RoomService roomService;
+    private final ModelMapper modelMapper;
+
     @Autowired
-    private RoomService roomService;
-    @Autowired
-    private ModelMapper modelMapper = new ModelMapper();
+    public RoomController(RoomService roomService, ModelMapper modelMapper) {
+        this.roomService = roomService;
+        this.modelMapper = modelMapper;
+    }
 
     @GetMapping("/getRoom")    //request roominfo for current room
     public RoomDto getRoom(@RequestParam(value = "name") String name) {

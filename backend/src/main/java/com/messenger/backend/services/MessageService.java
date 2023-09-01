@@ -13,15 +13,13 @@ import java.util.List;
 
 @Service
 public class MessageService {
-    @Autowired
+
     private final MessageRepository messageRepository;
-    @Autowired
     private final UserRepository userRepository;
-    @Autowired
     private final RoomRepository roomRepository;
-    @Autowired
     private final RoomMessagesStreamingServiceImplBaseImpl messagesService;
 
+    @Autowired
     public MessageService(MessageRepository messageRepository, UserRepository userRepository, RoomRepository roomRepository, RoomMessagesStreamingServiceImplBaseImpl messagesService) {
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
@@ -46,8 +44,8 @@ public class MessageService {
 
     public List<MessageEntity> getByRoomId(Integer id) {
 
-        List<MessageEntity> result= Collections.emptyList();
-        if (id!=null)
+        List<MessageEntity> result = Collections.emptyList();
+        if (id != null)
             result = messageRepository.getByRoomId(id);
         return result;
     }

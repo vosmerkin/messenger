@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.lognet.springboot.grpc.GRpcService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
 @GRpcService
@@ -24,6 +25,7 @@ public class RoomMessagesStreamingServiceImplBaseImpl extends RoomMessagesStream
     private final MessageService messageService;
     private final Map<ObserverKey, StreamObserver<RoomMessagesResponse>> streamObserverMap = new HashMap<>();
 
+    @Autowired
     public RoomMessagesStreamingServiceImplBaseImpl(@Lazy MessageService messageService) {
         this.messageService = messageService;
     }
