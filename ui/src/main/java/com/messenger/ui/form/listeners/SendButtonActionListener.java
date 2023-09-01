@@ -1,9 +1,11 @@
-package com.messenger.ui.form;
+package com.messenger.ui.form.listeners;
 
 import com.messenger.common.dto.MessageDto;
+import com.messenger.ui.form.StartForm;
 import com.messenger.ui.services.UiAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,11 +33,6 @@ public class SendButtonActionListener implements ActionListener {
                 if (form.getCurrentUser() != null && form.getCurrentRoom() != null) {
                     MessageDto message = new MessageDto(null, Date.from(Instant.now()), messageTextField.getText(), currentRoom, currentUser);
                     uiAction.sendMessage(message);
-
-//                    LOG.info("run messageListUpdaterSwingWorker to update messages immediately after sending");
-//                    MessageListUpdaterSwingWorker messageListWorker = new MessageListUpdaterSwingWorker(form);
-//                    messageListWorker.execute();
-
                     messageTextField.setText("");
                 }
                 return null;

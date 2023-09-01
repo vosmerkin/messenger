@@ -5,6 +5,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.messenger.common.dto.MessageDto;
 import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
+import com.messenger.ui.form.listeners.*;
 import com.messenger.ui.services.UiAction;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +16,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -80,7 +80,7 @@ public class StartForm {
         ActionListener userLoginButtonActionListener = new UserLoginButtonActionListener(this);
         userLoginButton.addActionListener(userLoginButtonActionListener);
         userNameTextField.addActionListener(userLoginButtonActionListener);
-        userNameTextField.getDocument().addDocumentListener(new userNameTextFieldDocumentListener(this));
+        userNameTextField.getDocument().addDocumentListener(new UserNameTextFieldDocumentListener(this));
 
         ActionListener roomCreateConnectActionListener = new RoomCreateConnectActionListener(this);
         roomCreateConnectButton.addActionListener(roomCreateConnectActionListener);
@@ -99,17 +99,17 @@ public class StartForm {
         roomChatTableScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
     }
 
-    void changeUserLoginButtonEnabledState() {
+    public void changeUserLoginButtonEnabledState() {
         userLoginButton.setEnabled(!userNameTextField.getText().isBlank());
     }
 
-    void changeRoomCreateConnectButtonEnabledState() {
+    public void changeRoomCreateConnectButtonEnabledState() {
         roomNameTextField.setEnabled(userLoggedInStatus);
         roomCreateConnectButton.setEnabled(!roomNameTextField.getText().isBlank()
                 & userLoggedInStatus);
     }
 
-    void changeSendButtonEnabledState() {
+    public void changeSendButtonEnabledState() {
         messageTextField.setEnabled(roomConnectedStatus);
         sendButton.setEnabled(!messageTextField.getText().isBlank() & roomConnectedStatus);
     }

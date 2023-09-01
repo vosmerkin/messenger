@@ -110,13 +110,6 @@ public class MessageEntity {
     }
     public static MessageProto toProto(MessageEntity message) {
         if (message==null) return null;
-//        int32 message_id = 1;
-//        google.protobuf.Timestamp message_date_time = 2;
-//        string message = 3;
-//        RoomProto room_proto = 4;
-//        UserProto user_proto = 5;
-//        int32 user_id = 6;
-//        string user_name = 7;
         return MessageProto.newBuilder()
                 .setMessageId(message.getId())
                 .setMessageDateTime(Timestamp.newBuilder()

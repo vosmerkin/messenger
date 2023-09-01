@@ -80,23 +80,14 @@ public class RoomEntity {
                 ", roomUsers=" + roomUsers +
                 '}';
     }
+
     public static RoomProto toProto(RoomEntity room) {
-//        message RoomProto {
-//            int32 room_id = 1;
-//            string room_name = 2;
-//            repeated UserProto room_users = 3;
-//        }
-        if (room == null )        return null;
+        if (room == null) return null;
         return RoomProto.newBuilder()
                 .setRoomId(room.getId())
                 .setRoomName(room.getRoomName())
                 .addAllRoomUsers(new HashSet<>(room.getRoomUsers().stream().map(UserEntity::toProto).collect(Collectors.toSet())))
                 .build();
-
-
-
-
-
 
 
 //        new HashSet<>(roomProto.getRoomUsersList().stream().map(UserDto::fromProto).collect(Collectors.toSet()))

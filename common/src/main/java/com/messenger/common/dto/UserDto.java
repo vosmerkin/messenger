@@ -78,10 +78,8 @@ public class UserDto implements Serializable {
     }
 
     public static UserDto fromProto(UserProto userProto) {
-//        (Integer id, String userName, Date lastActionDateTime, Boolean activeStatus, Set<UserDto> contactList)
         if (userProto == null) return UserDto.EMPTY_ENTITY;
 
-//        if (userProto.getContactListList()!=null)
         return new UserDto(userProto.getUserId(),
                 userProto.getUserName(),
                 Date.from(Instant.ofEpochSecond(userProto.getLastActionDateTime().getSeconds(), userProto.getLastActionDateTime().getNanos())),

@@ -127,13 +127,6 @@ public class UserEntity {
     }
 
     public static UserProto toProto(UserEntity user) {
-//        message UserProto {
-//            int32 user_id = 1;
-//            string user_name = 2;
-//            google.protobuf.Timestamp last_action_date_time = 3;
-//            bool active_status = 4;
-//            repeated UserProto contact_list = 5;
-//        }
         if (user == null) return null;
         return UserProto.newBuilder()
                 .setUserId(user.getId())

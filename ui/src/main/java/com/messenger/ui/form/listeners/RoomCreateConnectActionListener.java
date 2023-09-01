@@ -1,7 +1,8 @@
-package com.messenger.ui.form;
+package com.messenger.ui.form.listeners;
 
 import com.messenger.common.dto.MessageDto;
 import com.messenger.common.dto.RoomDto;
+import com.messenger.ui.form.StartForm;
 import com.messenger.ui.grpc.GrpcClient;
 import com.messenger.ui.services.UiAction;
 import org.slf4j.Logger;
@@ -50,7 +51,6 @@ public class RoomCreateConnectActionListener implements ActionListener {
                 var roomConnectedStatus = form.isRoomConnectedStatus();
                 var currentUser = form.getCurrentUser();
                 var currentRoom = form.getCurrentRoom();
-//                var currentRoomMessageList = form.getCurrentRoomMessageList();
                 roomCreateConnectButton.setEnabled(false);
                 if (roomConnectedStatus) {
                     //stop message update
@@ -66,14 +66,7 @@ public class RoomCreateConnectActionListener implements ActionListener {
                         currentRoomMessageList.clear();
 
                         LOG.info("STOP message updating");
-//                        if (messageListUpdater != null) {
                         messageListUpdater.stopUpdating();
-//                            messageListUpdater = null;
-//                        }
-//                        if (messageListUpdaterHandle != null) {
-//                            messageListUpdaterHandle.cancel(true);
-//                            messageListUpdaterHandle = null;
-//                        }
                         roomCreateConnectButton.setEnabled(true);
                         form.changeSendButtonEnabledState();
                     }
@@ -91,16 +84,7 @@ public class RoomCreateConnectActionListener implements ActionListener {
                         form.changeSendButtonEnabledState();
 //                                fillMessagesFromHistory
                         LOG.info("Start message updating");
-//                        messageListUpdater = new MessageListUpdaterRest(form);
                         messageListUpdater.startUpdating();
-//                        final Runnable messageListUpdaterRunnuble = new Runnable() {
-//                            public void run() {
-//                                MessageListUpdaterSwingWorker messageListWorker = new MessageListUpdaterSwingWorker(form, currentRoomMessageList);
-//                                messageListWorker.execute();
-//                            }
-//                        };
-//                        messageListUpdaterHandle =
-//                                scheduler.scheduleAtFixedRate(messageListUpdaterRunnuble, 5, 20, SECONDS);
                     }
                 }
                 roomCreateConnectButton.setEnabled(true);

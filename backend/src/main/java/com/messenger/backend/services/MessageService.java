@@ -1,7 +1,6 @@
 package com.messenger.backend.services;
 
 import com.messenger.backend.entity.MessageEntity;
-import com.messenger.backend.grpc.RoomMessagesStreamingServiceImplBaseImpl;
 import com.messenger.backend.repository.MessageRepository;
 import com.messenger.backend.repository.RoomRepository;
 import com.messenger.backend.repository.UserRepository;
@@ -17,10 +16,10 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
-    private final RoomMessagesStreamingServiceImplBaseImpl messagesService;
+    private final GrpcMessagesStreamingService messagesService;
 
     @Autowired
-    public MessageService(MessageRepository messageRepository, UserRepository userRepository, RoomRepository roomRepository, RoomMessagesStreamingServiceImplBaseImpl messagesService) {
+    public MessageService(MessageRepository messageRepository, UserRepository userRepository, RoomRepository roomRepository, GrpcMessagesStreamingService messagesService) {
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
