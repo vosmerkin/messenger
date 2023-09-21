@@ -1,4 +1,4 @@
-package com.messenger.ui.grpc;
+package com.messenger.ui.messageUpdater;
 
 import com.messenger.common.dto.MessageDto;
 import com.messenger.ui.form.StartForm;
@@ -13,15 +13,15 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 
-public class GrpcClient {
-    private static final Logger LOG = LoggerFactory.getLogger(GrpcClient.class);
+public class MessageListUpdaterGrpc implements MessageListUpdater {
+    private static final Logger LOG = LoggerFactory.getLogger(MessageListUpdaterGrpc.class);
     private final String grpcHost;
     private final ManagedChannel channel;
     private final RoomMessagesStreamingServiceGrpc.RoomMessagesStreamingServiceBlockingStub stub;
     private final StartForm form;
 
 
-    public GrpcClient(StartForm form) {
+    public MessageListUpdaterGrpc(StartForm form) {
         this.form = form;
         grpcHost = PropertyManager.getProperty("grpc.host");
         LOG.info("backend.host {}", grpcHost);

@@ -1,16 +1,15 @@
-package com.messenger.ui.form;
+package com.messenger.ui.messageUpdater;
 
-import com.messenger.common.dto.MessageDto;
+import com.messenger.ui.form.StartForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-public class MessageListUpdaterRest {
+public class MessageListUpdaterRest implements MessageListUpdater {
     private static final Logger LOG = LoggerFactory.getLogger(MessageListUpdaterRest.class);
     private final Runnable messageListUpdaterRunnable;
     private ScheduledFuture<?> messageListUpdaterHandle;
@@ -22,7 +21,7 @@ public class MessageListUpdaterRest {
         scheduler = form.getScheduler();
         messageListUpdaterRunnable = new Runnable() {
             public void run() {
-                MessageListUpdaterSwingWorker messageListWorker = new MessageListUpdaterSwingWorker(form);
+                MessageListUpdaterRestSwingWorker messageListWorker = new MessageListUpdaterRestSwingWorker(form);
                 messageListWorker.execute();
             }
         };

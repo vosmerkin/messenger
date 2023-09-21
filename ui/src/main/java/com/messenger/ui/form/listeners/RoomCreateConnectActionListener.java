@@ -3,7 +3,8 @@ package com.messenger.ui.form.listeners;
 import com.messenger.common.dto.MessageDto;
 import com.messenger.common.dto.RoomDto;
 import com.messenger.ui.form.StartForm;
-import com.messenger.ui.grpc.GrpcClient;
+import com.messenger.ui.messageUpdater.MessageListUpdater;
+import com.messenger.ui.messageUpdater.MessageListUpdaterGrpc;
 import com.messenger.ui.services.UiAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,7 @@ public class RoomCreateConnectActionListener implements ActionListener {
     private final List<MessageDto> currentRoomMessageList;
 
 //    private final MessageListUpdaterRest messageListUpdater;
-    private final GrpcClient messageListUpdater;
+    private final MessageListUpdater messageListUpdater;
 
     public RoomCreateConnectActionListener(StartForm form) {
         this.form = form;
@@ -39,7 +40,7 @@ public class RoomCreateConnectActionListener implements ActionListener {
 //        messageListUpdaterHandle = form.getMessageListUpdaterHandle();
         currentRoomMessageList = form.getCurrentRoomMessageList();
 //        messageListUpdater = new MessageListUpdaterRest(form);
-        messageListUpdater = new GrpcClient(form);
+        messageListUpdater = new MessageListUpdaterGrpc(form);
     }
 
     @Override

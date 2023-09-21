@@ -1,25 +1,25 @@
-package com.messenger.ui.form;
+package com.messenger.ui.messageUpdater;
 
 import com.messenger.common.dto.MessageDto;
+import com.messenger.ui.form.StartForm;
 import com.messenger.ui.services.UiAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
-public class MessageListUpdaterSwingWorker extends SwingWorker<Object, Object> {
-    private static final Logger LOG = LoggerFactory.getLogger(MessageListUpdaterSwingWorker.class);
+public class MessageListUpdaterRestSwingWorker extends SwingWorker<Object, Object> {
+    private static final Logger LOG = LoggerFactory.getLogger(MessageListUpdaterRestSwingWorker.class);
     private final StartForm form;
     private final UiAction uiAction;
     private List<MessageDto> updatedMessageList;
     private final List<MessageDto> currentRoomMessageList;
 
-    public MessageListUpdaterSwingWorker(StartForm form) {
+    public MessageListUpdaterRestSwingWorker(StartForm form) {
         this.form = form;
         uiAction = form.getUiAction();
-        this.currentRoomMessageList= form.getCurrentRoomMessageList();
+        this.currentRoomMessageList = form.getCurrentRoomMessageList();
     }
 
     @Override
@@ -36,10 +36,8 @@ public class MessageListUpdaterSwingWorker extends SwingWorker<Object, Object> {
         LOG.info("Received {} new messages, updating JTable", currentRoomMessageList.size() - updatedMessageList.size());
         //add messages difference to messagesModelList
         updatedMessageList.removeAll(currentRoomMessageList);
-        if (updatedMessageList.size() > 0) {
-            for (MessageDto message : updatedMessageList) {
-                form.addMessage(message);
-            }
+        for (MessageDto message : updatedMessageList) {
+            form.addMessage(message);
         }
     }
 }
