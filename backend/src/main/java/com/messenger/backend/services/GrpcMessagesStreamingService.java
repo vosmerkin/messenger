@@ -30,7 +30,7 @@ public class GrpcMessagesStreamingService extends RoomMessagesStreamingServiceGr
     }
 
 
-    public void BroadcastNewMessage(MessageEntity message) {
+    public void broadcastNewMessage(MessageEntity message) {
         if (message == null) return;
         LOG.info("Broadcadting new message for users in room_id = {}", message.getRoom().getId());
         for (Map.Entry<ObserverKey, StreamObserver<RoomMessagesResponse>> entry : streamObserverMap.entrySet()) {
@@ -60,24 +60,18 @@ public class GrpcMessagesStreamingService extends RoomMessagesStreamingServiceGr
     @Override
     public void messageStreaming(RoomRequest request, StreamObserver<RoomMessagesResponse> responseObserver) {
         LOG.info("Message streaming request from user_id=" + request.getUserId() + " for room_id=" + request.getRoomId());
-
-
         streamObserverMap.put(
                 new ObserverKey(request.getUserId(), request.getRoomId()),
                 responseObserver
         );
-
-
         //get previous messages and send to client
         //or we can get history messages with REST and use GRPC for message updating
         List<MessageEntity> roomMessages = messageService.getByRoomId(request.getRoomId());
-        if (roomMessages != null && roomMessages.size() > 0) {
+        if (roomMessages != null ) {
             for (MessageEntity message : roomMessages) {
                 responseObserver.onNext(message.toRoomMessagesResponse());
             }
         }
-
-        //
 //        responseObserver.onCompleted();
     }
 

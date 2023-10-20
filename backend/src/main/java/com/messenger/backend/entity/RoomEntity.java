@@ -1,5 +1,6 @@
 package com.messenger.backend.entity;
 
+import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
 import grpc_generated.RoomProto;
 
@@ -33,6 +34,7 @@ public class RoomEntity {
         this.roomName = roomName;
         this.roomUsers = roomUsers;
     }
+
 
 
     public Integer getId() {
@@ -88,8 +90,13 @@ public class RoomEntity {
                 .setRoomName(room.getRoomName())
                 .addAllRoomUsers(new HashSet<>(room.getRoomUsers().stream().map(UserEntity::toProto).collect(Collectors.toSet())))
                 .build();
-
-
 //        new HashSet<>(roomProto.getRoomUsersList().stream().map(UserDto::fromProto).collect(Collectors.toSet()))
+    }
+
+    public static RoomEntity fromProto(RoomProto roomProto) {
+        if (roomProto == null) return RoomEntity.EMPTY_ENTITY;
+        return new RoomEntity(roomProto.getRoomId(),
+                roomProto.getRoomName(),
+                new HashSet<>(roomProto.getRoomUsersList().stream().map(UserEntity::fromProto).collect(Collectors.toSet())));
     }
 }

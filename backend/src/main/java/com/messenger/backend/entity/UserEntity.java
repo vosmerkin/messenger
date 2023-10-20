@@ -1,9 +1,11 @@
 package com.messenger.backend.entity;
 
 import com.google.protobuf.Timestamp;
+import com.messenger.common.dto.UserDto;
 import grpc_generated.UserProto;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -138,4 +140,17 @@ public class UserEntity {
                 .setActiveStatus(user.getActiveStatus())
                 .addAllContactList(new HashSet<>(user.getContactList().stream().map(UserEntity::toProto).collect(Collectors.toSet()))).build();
     }
+
+//    public static <R> R fromProto(UserProto userProto) {
+//    }
+    public static UserEntity fromProto(UserProto userProto) {
+        if (userProto == null) return UserEntity.EMPTY_ENTITY;
+
+        return new UserEntity(userProto.getUserId(),
+                userProto.getUserName(),
+                Date.from(Instant.ofEpochSecond(userProto.getLastActionDateTime().getSeconds(), userProto.getLastActionDateTime().getNanos())),
+                userProto.getActiveStatus(),
+                new HashSet<>(userProto.getContactListList().stream().map(UserEntity::fromProto).collect(Collectors.toSet())));
+    }
+
 }

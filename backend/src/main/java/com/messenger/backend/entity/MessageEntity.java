@@ -1,12 +1,14 @@
 package com.messenger.backend.entity;
 
 import com.google.protobuf.Timestamp;
+import com.messenger.common.dto.MessageDto;
 import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
 import grpc_generated.MessageProto;
 import grpc_generated.RoomMessagesResponse;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -122,6 +124,16 @@ public class MessageEntity {
                 .setUserId(message.getUser().getId())
                 .setUserName(message.getUser().getUserName())
                 .build();
+    }
+
+    public static MessageEntity fromProto(MessageProto messageProto){
+//      public MessageEntity(Integer id, Date messageDateTime, String messageText, RoomEntity room, UserEntity user)
+        if (messageProto == null) return MessageEntity.EMPTY_ENTITY;
+        return new MessageEntity(messageProto.getMessageId(),
+                Date.from(Instant.ofEpochSecond(messageProto.getMessageDateTime().getSeconds(), messageProto.getMessageDateTime().getNanos())),
+                messageProto.getMessage(),
+                RoomEntity.fromProto(messageProto.getRoomProto()),
+                UserEntity.fromProto(messageProto.getUserProto()));
     }
 
     public RoomMessagesResponse toRoomMessagesResponse() {

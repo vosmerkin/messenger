@@ -5,6 +5,7 @@ import com.messenger.common.dto.RoomDto;
 import com.messenger.ui.form.StartForm;
 import com.messenger.ui.messageUpdater.MessageListUpdater;
 import com.messenger.ui.messageUpdater.MessageListUpdaterGrpc;
+import com.messenger.ui.messageUpdater.MessageListUpdaterRest;
 import com.messenger.ui.services.UiAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,8 @@ public class RoomCreateConnectActionListener implements ActionListener {
 //        messageListUpdaterHandle = form.getMessageListUpdaterHandle();
         currentRoomMessageList = form.getCurrentRoomMessageList();
 //        messageListUpdater = new MessageListUpdaterRest(form);
-        messageListUpdater = new MessageListUpdaterGrpc(form);
+        messageListUpdater = new MessageListUpdaterRest(form);
+//        messageListUpdater = new MessageListUpdaterGrpc(form);
     }
 
     @Override

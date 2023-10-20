@@ -35,7 +35,7 @@ public class MessageService {
                 result = messageRepository.save(message);
             }
             //broadcast to all room users
-            messagesService.BroadcastNewMessage(message);
+            messagesService.broadcastNewMessage(message);
 
         }
         return result;
