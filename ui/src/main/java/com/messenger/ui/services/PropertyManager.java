@@ -9,21 +9,32 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class PropertyManager {
-    private static final Logger log = LoggerFactory.getLogger(PropertyManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PropertyManager.class);
     private final static String NETWORK_PROPERTY_FILE_NAME = "ui/src/main/resources/network.properties";
 
     private static final Properties property = new Properties();
+
+    private static boolean isLocalFlag;
 
     static {
         try (InputStream fis = new FileInputStream(NETWORK_PROPERTY_FILE_NAME)) {
             property.load(fis);
         } catch (IOException e) {
-            log.debug("Error: Property file not found!");
+            LOG.debug("Error: Property file not found!");
         }
     }
 
     public static String getProperty(String propertyName) {
+        if(isLocalFlag) {
+            if (property.containsKey(propertyName + "-local")){
+                return property.getProperty(propertyName + "-local");
+            }
+        }
         return property.getProperty(propertyName);
     }
 
+    public static void setIsLocalFlag(Boolean flag) {
+        isLocalFlag = flag;
+        LOG.info("isLocalFlag is set to {}",isLocalFlag);
+    }
 }

@@ -1,7 +1,6 @@
 package com.messenger.ui.services;
 
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.messenger.common.dto.*;
 import com.messenger.ui.exceptions.HttpClientIOException;
 import com.messenger.ui.exceptions.RoomNotFoundException;
@@ -16,12 +15,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 
 public class HttpBackendClient {
-    private static final Logger log = LoggerFactory.getLogger(HttpBackendClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HttpBackendClient.class);
     public static final String APPLICATION_JSON = "application/json";
     public static final String CONTENT_TYPE = "Content-Type";
 
@@ -34,12 +32,14 @@ public class HttpBackendClient {
     private final String roomRequestAddress;
     private final String roomUpdateUsersListAddress;
     private final String messageSendAddress;
-    private final String messagesGetAddress;
+    private final String messagesByRoomIdGetAddress;
+    private final String messageByIdGetAddress;
 
 
     public HttpBackendClient() {
         client = HttpClient.newHttpClient();
         backendHost = PropertyManager.getProperty("backend.host");
+        LOG.info("backend.host {}", backendHost);
         userCreateAddress = backendHost + PropertyManager.getProperty("backend.user_create");
         userRequestAddress = backendHost + PropertyManager.getProperty("backend.user_request");
         userUpdateAddress = backendHost + PropertyManager.getProperty("backend.user_update");
@@ -47,13 +47,14 @@ public class HttpBackendClient {
         roomRequestAddress = backendHost + PropertyManager.getProperty("backend.room_request");
         roomUpdateUsersListAddress = backendHost + PropertyManager.getProperty("backend.room_update_users");
         messageSendAddress = backendHost + PropertyManager.getProperty("backend.message_send");
-        messagesGetAddress = backendHost + PropertyManager.getProperty("backend.messages_get");
+        messagesByRoomIdGetAddress = backendHost + PropertyManager.getProperty("backend.messages_get");
+        messageByIdGetAddress = backendHost + PropertyManager.getProperty("backend.message_get");
     }
 
 
     public UserDto userRequest(String userName) throws InterruptedException, UserNotFoundException, IOException {
         var url = userRequestAddress + userName;
-        log.info("Requesting user {} at remote host: {}", userName, url);
+        LOG.info("Requesting user {} at remote host: {}", userName, url);
         var request = HttpRequest.newBuilder(URI.create(url))
                 .GET()
                 .build();
@@ -83,7 +84,7 @@ public class HttpBackendClient {
 
     public UserDto userCreate(String userName) throws InterruptedException, IOException {
         var url = userCreateAddress + userName;
-        log.debug("Creating a new user: {}, url address: {}", userName, url);
+        LOG.debug("Creating a new user: {}, url address: {}", userName, url);
         var request = HttpRequest.newBuilder(URI.create(url))
                 .header(CONTENT_TYPE, APPLICATION_JSON)
                 .GET()
@@ -92,19 +93,19 @@ public class HttpBackendClient {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            log.error("User creation has failed: {}", e.getMessage());
+            LOG.error("User creation has failed: {}", e.getMessage());
             throw new HttpClientIOException("IOException to remote address " + url);
         }
         if (response.statusCode() > 399) {
             throw new HttpClientIOException("IOException to remote address " + url);
         }
-        log.info("A new user has been created: {}. Server response: {}", userName, response.body());
+        LOG.info("A new user has been created: {}. Server response: {}", userName, response.body());
         return JsonMapper.fromJson(response.body(), UserDto.class);
     }
 
     public RoomDto roomRequest(String roomName) throws IOException, InterruptedException, RoomNotFoundException {
         var url = roomRequestAddress + roomName;
-        log.info("Requesting room {} at remote host: {}", roomName, url);
+        LOG.info("Requesting room {} at remote host: {}", roomName, url);
         var request = HttpRequest.newBuilder(URI.create(url))
                 .GET()
                 .build();
@@ -120,7 +121,7 @@ public class HttpBackendClient {
 
     public RoomDto roomCreate(String roomName) throws InterruptedException, IOException {
         var url = roomCreateAddress + roomName;
-        log.debug("Creating a new room: {}, url address: {}", roomName, url);
+        LOG.debug("Creating a new room: {}, url address: {}", roomName, url);
         var request = HttpRequest.newBuilder(URI.create(url))
                 .header(CONTENT_TYPE, APPLICATION_JSON)
                 .GET()
@@ -131,7 +132,7 @@ public class HttpBackendClient {
         } catch (IOException e) {
             throw new HttpClientIOException("IOException to remote address " + url);
         }
-        log.info("A new room has been created: {}. Server response: {}", roomName, response.body());
+        LOG.info("A new room has been created: {}. Server response: {}", roomName, response.body());
         if (response.statusCode() > 399) {
             throw new HttpClientIOException("IOException to remote address " + url);
         }
@@ -153,7 +154,7 @@ public class HttpBackendClient {
     }
 
     public void messageSend(MessageDto message) throws InterruptedException, HttpClientIOException {
-        log.debug("HttpClient sending message {}", message.getMessageText());
+        LOG.debug("HttpClient sending message {}", message.getMessageText());
         var request = HttpRequest.newBuilder(URI.create(messageSendAddress))
                 .header(CONTENT_TYPE, APPLICATION_JSON)
                 .PUT(HttpRequest.BodyPublishers.ofString(JsonMapper.toJson(message)))
@@ -166,9 +167,9 @@ public class HttpBackendClient {
         }
     }
 
-    public List<MessageDto> getMessages(Integer roomId) throws HttpClientIOException, InterruptedException {
-        var url = messagesGetAddress + roomId;
-        log.debug("Requesting all messages for roomId: {}, url address: {}", roomId, url);
+    public List<MessageDto> getMessagesbyRoomId(Integer roomId) throws HttpClientIOException, InterruptedException {
+        var url = messagesByRoomIdGetAddress + roomId;
+        LOG.debug("Requesting all messages for roomId: {}, url address: {}", roomId, url);
         var request = HttpRequest.newBuilder(URI.create(url))
                 .header(CONTENT_TYPE, APPLICATION_JSON)
                 .GET()
@@ -176,7 +177,7 @@ public class HttpBackendClient {
         HttpResponse<String> response;
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException  e) {
+        } catch (IOException e) {
             throw new HttpClientIOException("IOException to remote address " + url);
         }
         if (response.statusCode() > 399) {
@@ -185,5 +186,25 @@ public class HttpBackendClient {
         MessageDto[] messagesArray = JsonMapper.fromJson(response.body(), MessageDto[].class);
         return new ArrayList<>(Arrays.asList(messagesArray));
 
+    }
+
+    public MessageDto getMessageById(Integer messageId) throws IOException, InterruptedException {
+        var url = messageByIdGetAddress + messageId;
+        LOG.debug("Requesting message by Id: {}, url address: {}", messageId, url);
+        var request = HttpRequest.newBuilder(URI.create(url))
+                .header(CONTENT_TYPE, APPLICATION_JSON)
+                .GET()
+                .build();
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException e) {
+            throw new HttpClientIOException("IOException to remote address " + url);
+        }
+        if (response.statusCode() > 399) {
+            throw new HttpClientIOException("IOException to remote address " + url);
+        }
+        MessageDto message = JsonMapper.fromJson(response.body(), MessageDto.class);
+        return message;
     }
 }

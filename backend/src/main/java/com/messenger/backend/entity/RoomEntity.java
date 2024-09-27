@@ -1,10 +1,12 @@
 package com.messenger.backend.entity;
 
+import com.messenger.common.dto.RoomDto;
+import com.messenger.common.dto.UserDto;
+import grpc_generated.RoomProto;
+
 import javax.persistence.*;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "tbl_room")
@@ -17,7 +19,7 @@ public class RoomEntity {
     @Column(name = "room_name")
     private String roomName;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "tbl_room_users",
             joinColumns = @JoinColumn(name = "room_id"),
@@ -32,6 +34,8 @@ public class RoomEntity {
         this.roomName = roomName;
         this.roomUsers = roomUsers;
     }
+
+
 
     public Integer getId() {
         return id;
@@ -77,5 +81,22 @@ public class RoomEntity {
                 ", roomName='" + roomName + '\'' +
                 ", roomUsers=" + roomUsers +
                 '}';
+    }
+
+    public static RoomProto toProto(RoomEntity room) {
+        if (room == null) return null;
+        return RoomProto.newBuilder()
+                .setRoomId(room.getId())
+                .setRoomName(room.getRoomName())
+                .addAllRoomUsers(new HashSet<>(room.getRoomUsers().stream().map(UserEntity::toProto).collect(Collectors.toSet())))
+                .build();
+//        new HashSet<>(roomProto.getRoomUsersList().stream().map(UserDto::fromProto).collect(Collectors.toSet()))
+    }
+
+    public static RoomEntity fromProto(RoomProto roomProto) {
+        if (roomProto == null) return RoomEntity.EMPTY_ENTITY;
+        return new RoomEntity(roomProto.getRoomId(),
+                roomProto.getRoomName(),
+                new HashSet<>(roomProto.getRoomUsersList().stream().map(UserEntity::fromProto).collect(Collectors.toSet())));
     }
 }

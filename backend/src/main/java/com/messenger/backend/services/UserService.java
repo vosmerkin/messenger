@@ -10,9 +10,9 @@ import java.util.Date;
 
 @Service
 public class UserService {
-    @Autowired
     private final UserRepository userRepository;
 
+    @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }

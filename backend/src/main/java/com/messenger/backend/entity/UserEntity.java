@@ -1,18 +1,13 @@
 package com.messenger.backend.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Set;
+import com.google.protobuf.Timestamp;
+import com.messenger.common.dto.UserDto;
+import grpc_generated.UserProto;
+
+import javax.persistence.*;
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "tbl_users")
@@ -58,6 +53,7 @@ public class UserEntity {
     public UserEntity(Integer id) {
         this.id = id;
     }
+
 
     public void setId(Integer id) {
         this.id = id;
@@ -128,8 +124,33 @@ public class UserEntity {
                 ", userName='" + userName + '\'' +
                 ", lastActionDateTime=" + lastActionDateTime +
                 ", activeStatus=" + activeStatus +
-                ", contactList=" + contactList +
-                ", rooms=" + rooms +
+                ", contactList=" + contactList.size() + " contacts" +
                 '}';
     }
+
+    public static UserProto toProto(UserEntity user) {
+        if (user == null) return null;
+        return UserProto.newBuilder()
+                .setUserId(user.getId())
+                .setUserName(user.getUserName())
+                .setLastActionDateTime(Timestamp.newBuilder()
+                        .setSeconds(user.getLastActionDateTime().toInstant().getEpochSecond())
+                        .setNanos(user.getLastActionDateTime().toInstant().getNano())
+                        .build())
+                .setActiveStatus(user.getActiveStatus())
+                .addAllContactList(new HashSet<>(user.getContactList().stream().map(UserEntity::toProto).collect(Collectors.toSet()))).build();
+    }
+
+//    public static <R> R fromProto(UserProto userProto) {
+//    }
+    public static UserEntity fromProto(UserProto userProto) {
+        if (userProto == null) return UserEntity.EMPTY_ENTITY;
+
+        return new UserEntity(userProto.getUserId(),
+                userProto.getUserName(),
+                Date.from(Instant.ofEpochSecond(userProto.getLastActionDateTime().getSeconds(), userProto.getLastActionDateTime().getNanos())),
+                userProto.getActiveStatus(),
+                new HashSet<>(userProto.getContactListList().stream().map(UserEntity::fromProto).collect(Collectors.toSet())));
+    }
+
 }

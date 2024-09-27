@@ -5,6 +5,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.messenger.common.dto.MessageDto;
 import com.messenger.common.dto.RoomDto;
 import com.messenger.common.dto.UserDto;
+import com.messenger.ui.form.listeners.*;
 import com.messenger.ui.services.UiAction;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,11 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
@@ -60,6 +60,7 @@ public class StartForm {
     @Getter
     private JTextField roomNameTextField;
     private JTable roomChatTable;
+    private JScrollPane roomChatTableScrollPane;
     @Getter
     @Setter
     private boolean userLoggedInStatus;
@@ -72,63 +73,19 @@ public class StartForm {
 
     public StartForm() {
         ActionListener sendButtonActionListener = new SendButtonActionListener(this);
-        messageTextField.addActionListener(sendButtonActionListener);
         sendButton.addActionListener(sendButtonActionListener);
-        messageTextField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                changeSendButtonEnabledState();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                changeSendButtonEnabledState();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                changeSendButtonEnabledState();
-            }
-        });
+        messageTextField.addActionListener(sendButtonActionListener);
+        messageTextField.getDocument().addDocumentListener(new MessageTextFieldDocumentListener(this));
 
         ActionListener userLoginButtonActionListener = new UserLoginButtonActionListener(this);
         userLoginButton.addActionListener(userLoginButtonActionListener);
         userNameTextField.addActionListener(userLoginButtonActionListener);
-        userNameTextField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                changeUserLoginButtonEnabledState();
-            }
+        userNameTextField.getDocument().addDocumentListener(new UserNameTextFieldDocumentListener(this));
 
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                changeUserLoginButtonEnabledState();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                changeUserLoginButtonEnabledState();
-            }
-        });
         ActionListener roomCreateConnectActionListener = new RoomCreateConnectActionListener(this);
         roomCreateConnectButton.addActionListener(roomCreateConnectActionListener);
         roomNameTextField.addActionListener(roomCreateConnectActionListener);
-        roomNameTextField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                changeRoomCreateConnectButtonEnabledState();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                changeRoomCreateConnectButtonEnabledState();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                changeRoomCreateConnectButtonEnabledState();
-            }
-        });
+        roomNameTextField.getDocument().addDocumentListener(new RoomNameTextFieldDocumentListener(this));
 
         changeUserLoginButtonEnabledState();
         changeRoomCreateConnectButtonEnabledState();
@@ -138,19 +95,21 @@ public class StartForm {
         roomChatTable.getColumnModel().getColumn(1).setPreferredWidth((int) (roomChatTable.getWidth() * 0.2));
         roomChatTable.getColumnModel().getColumn(2).setWidth((int) (roomChatTable.getWidth() * 0.6));
 
+//        roomChatTableScrollPane = new JScrollPane(roomChatTable);
+        roomChatTableScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
     }
 
-    private void changeUserLoginButtonEnabledState() {
+    public void changeUserLoginButtonEnabledState() {
         userLoginButton.setEnabled(!userNameTextField.getText().isBlank());
     }
 
-    void changeRoomCreateConnectButtonEnabledState() {
+    public void changeRoomCreateConnectButtonEnabledState() {
         roomNameTextField.setEnabled(userLoggedInStatus);
         roomCreateConnectButton.setEnabled(!roomNameTextField.getText().isBlank()
                 & userLoggedInStatus);
     }
 
-    void changeSendButtonEnabledState() {
+    public void changeSendButtonEnabledState() {
         messageTextField.setEnabled(roomConnectedStatus);
         sendButton.setEnabled(!messageTextField.getText().isBlank() & roomConnectedStatus);
     }
@@ -209,7 +168,8 @@ public class StartForm {
         label2.setText("RoomName");
         mainPanel.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         roomChatTable = new JTable();
-        mainPanel.add(roomChatTable, new GridConstraints(2, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        roomChatTableScrollPane = new JScrollPane(roomChatTable);
+        mainPanel.add(roomChatTableScrollPane,  new GridConstraints(2, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
     }
 
     /**
@@ -225,5 +185,13 @@ public class StartForm {
 
     }
 
-
+    public void addMessage(MessageDto message) {
+        LOG.info("Adding message {}", message.getMessageText());
+        messageListModel.addRow(
+                new String[]{message.getUser().getUserName(),
+                        new SimpleDateFormat("HH:mm:ss").format(message.getMessageDateTime()),
+                        message.getMessageText()});
+        currentRoomMessageList.add(message);
+        roomChatTableScrollPane.getVerticalScrollBar().setValue(roomChatTableScrollPane.getVerticalScrollBar().getMaximum());
+    }
 }

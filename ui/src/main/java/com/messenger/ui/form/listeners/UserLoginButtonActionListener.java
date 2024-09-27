@@ -1,6 +1,7 @@
-package com.messenger.ui.form;
+package com.messenger.ui.form.listeners;
 
 import com.messenger.common.dto.UserDto;
+import com.messenger.ui.form.StartForm;
 import com.messenger.ui.services.UiAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ public class UserLoginButtonActionListener implements ActionListener {
     private final StartForm form;
     private final UiAction uiAction;
     private final JButton userLoginButton;
+    private final JTextField roomNameTextField;
     private final JTextField userNameTextField;
     private final DefaultListModel<UserDto> contactListModel;
 
@@ -21,6 +23,7 @@ public class UserLoginButtonActionListener implements ActionListener {
         this.form = form;
         uiAction = form.getUiAction();
         userLoginButton = form.getUserLoginButton();
+        roomNameTextField = form.getRoomNameTextField();
         userNameTextField = form.getUserNameTextField();
         contactListModel = form.getContactListModel();
     }
@@ -50,8 +53,7 @@ public class UserLoginButtonActionListener implements ActionListener {
                         userLoginButton.setText("User Logoff");
                         userNameTextField.setEnabled(false);
                         form.setUserLoggedInStatus(userLoggedInStatus = true);
-//                                contactListModel.addAll(currentUser.getContactList());
-//                                contactList.setModel(contactListModel);
+                        roomNameTextField.grabFocus();
                         //fill Contact List from UserEntity
                     }
                 }
